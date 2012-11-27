@@ -53,6 +53,6 @@ int stm32_write_flash( p_read_data read_data_func, p_progress progress_func );
 int stm32_erase_flash_page(u32 page_number,int page_count);
 int stm32_write_flash_page(u32 address_in,int page_count,p_read_data read_data_func, p_progress progress_func );
 
-extern uint32_t stm32_ser_id;
+extern int stm32_ser_id;
 #endif
 

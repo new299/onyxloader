@@ -27,7 +27,7 @@
     <ClCompile Include="stm32ld\stm32ld.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="stm32ld\serial_win32.cpp">
+    <ClCompile Include="stm32ld\serial_ftdi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

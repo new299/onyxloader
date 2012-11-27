@@ -121,7 +121,7 @@ int getandcheckCBUS( FT_HANDLE ftHandle0 ) {
 }
 
 
-int openSerialPorts8N1(int baud) {
+ser_handler openSerialPorts8N1(int baud) {
     char * 	pcBufRead = NULL;
     char * 	pcBufLD[MAX_DEVICES + 1];
     DWORD	dwRxSize = 0;
@@ -144,7 +144,7 @@ int openSerialPorts8N1(int baud) {
     
     if(ftStatus != FT_OK) {
         fprintf(stderr,"Error: FT_ListDevices(%d)\n", ftStatus);
-        return -1;
+        return (ser_handler)-1;
     }
     
     for(i = 0; ( (i <MAX_DEVICES) && (i < iNumDevs) ); i++) {
@@ -160,15 +160,15 @@ int openSerialPorts8N1(int baud) {
              also rmmod usbserial
              */
             fprintf(stderr,"Error FT_OpenEx(%d), device\n", ftStatus, i);
-            return -1;
+            return (ser_handler)-1;
         }
         
         printf("Opened device %s\n", cBufLD[i]);
         
-        if(getandcheckCBUS(ftHandle[i]) ) {
-            printf( "getandcheckCBUS failed, exiting.\n" );
-            return -1;
-        }
+        //if(getandcheckCBUS(ftHandle[i]) ) {
+        //    printf( "getandcheckCBUS failed, exiting.\n" );
+        //    return -1;
+        //}
         
         iDevicesOpen++;
         if((ftStatus = FT_SetBaudRate(ftHandle[i], baud)) != FT_OK) {
@@ -190,11 +190,11 @@ int openSerialPorts8N1(int baud) {
     
     if(pcBufRead)
         free(pcBufRead);
-    
-    return 0; // we always use the 0th device for now
+    return 0;
+   // return (ser_handler) ftHandle[0]; // we always use the 0th device for now
 }
 
-int openSerialPorts(int baud) {
+ser_handler openSerialPorts(int baud) {
   char * 	pcBufRead = NULL;
   char * 	pcBufLD[MAX_DEVICES + 1];
   DWORD	dwRxSize = 0;
@@ -217,7 +217,7 @@ int openSerialPorts(int baud) {
   
   if(ftStatus != FT_OK) {
     fprintf(stderr,"Error: FT_ListDevices(%d)\n", ftStatus);
-    return -1;
+    return (ser_handler)-1;
   }
   
   for(i = 0; ( (i <MAX_DEVICES) && (i < iNumDevs) ); i++) {
@@ -233,15 +233,15 @@ int openSerialPorts(int baud) {
 	 also rmmod usbserial
       */
       fprintf(stderr,"Error FT_OpenEx(%d), device\n", ftStatus, i);
-      return -1;
+      return (ser_handler)-1;
     }
     
     printf("Opened device %s\n", cBufLD[i]);
     
-    if(getandcheckCBUS(ftHandle[i]) ) {
-      printf( "getandcheckCBUS failed, exiting.\n" );
-      return -1;
-    }
+   // if(getandcheckCBUS(ftHandle[i]) ) {
+   //   printf( "getandcheckCBUS failed, exiting.\n" );
+   //   return -1;
+   // }
     
     iDevicesOpen++;
     if((ftStatus = FT_SetBaudRate(ftHandle[i], baud)) != FT_OK) {
@@ -264,7 +264,7 @@ int openSerialPorts(int baud) {
   if(pcBufRead)
     free(pcBufRead);
 
-  return 0; // we always use the 0th device for now
+  return 0;//(ser_handler) ftHandle[0]; // we always use the 0th device for now
 }
 
 // mode = 1 goes to bootloader, mode = 0 goes to normal
@@ -373,7 +373,7 @@ static void writeh_progress( u32 wrote )
 }
 
 
-char *read_to_prompt(int id) {
+char *read_to_prompt(ser_handler id) {
 
   char *data = (char *) malloc(10000);
   int   data_size  = 10000;
@@ -384,13 +384,13 @@ char *read_to_prompt(int id) {
   int lb=0;
   for(;;) {
     lb = b;
-    b = ser_read_byte(id);
+    b = ser_read_byte((ser_handler)id);
     if(b == -1) return data;
       
     data[wrote_size] = b;
     data[wrote_size+1] = 0;
     wrote_size++;
-    //printf("read: %d %c\n",b,b);
+    printf("read: %d %c\n",b,b);
     if(wrote_size == (data_size-5)) {
         data = (char *) realloc(data,data_size+10000);
         data_size += 10000;
@@ -404,34 +404,34 @@ char *read_to_prompt(int id) {
 char *do_get_log() {
     
     // open serial ports
-    int id = openSerialPorts8N1(115200);
+    ser_handler id = openSerialPorts8N1(115200);
     
-    ser_write(id,(const u8 *) "\r\n\r\n",4);
+    ser_write((ser_handler)id,(const u8 *) "\r\n\r\n",4);
     Sleep(100);
-    ser_set_timeout_ms( id, SER_NO_TIMEOUT );
-    while( ser_read_byte(id) != -1 );
-    ser_set_timeout_ms( id, STM32_COMM_TIMEOUT );
+    ser_set_timeout_ms((ser_handler) id, SER_NO_TIMEOUT );
+    while( ser_read_byte((ser_handler)id) != -1 );
+    ser_set_timeout_ms((ser_handler) id, STM32_COMM_TIMEOUT );
     
     
     printf("device id: %d\n",id);
     
     // Send Pause log
-    ser_write(id,(const u8 *) "LOGPAUSE\n",9);
-    free(read_to_prompt(id));
+    ser_write((ser_handler)id,(const u8 *) "LOGPAUSE\n",9);
+    free(read_to_prompt((ser_handler)id));
     
     // Send LOGXFER
-    ser_write(id,(const u8 *) "LOGXFER\n",8);
-    char *logdata = read_to_prompt(id);
+    ser_write((ser_handler)id,(const u8 *) "LOGXFER\n",8);
+    char *logdata = read_to_prompt((ser_handler)id);
     
     // Send LOGSIGN
-    ser_set_timeout_ms( id, SER_INF_TIMEOUT );
-    ser_write(id,(const u8 *) "LOGSIG\n",8);
-    char *logsig = read_to_prompt(id);
-    ser_set_timeout_ms( id, STM32_COMM_TIMEOUT );
+    ser_set_timeout_ms( (ser_handler)id, SER_INF_TIMEOUT );
+    ser_write((ser_handler)id,(const u8 *) "LOGSIG\n",8);
+    char *logsig = read_to_prompt((ser_handler)id);
+    ser_set_timeout_ms((ser_handler) id, STM32_COMM_TIMEOUT );
     
     // Send Resume log
-    ser_write(id,(const u8 *) "LOGRESUME\n",10);
-    free(read_to_prompt(id));
+    ser_write((ser_handler)id,(const u8 *) "LOGRESUME\n",10);
+    free(read_to_prompt((ser_handler)id));
         
     // close serial ports
     closeSerialPorts();

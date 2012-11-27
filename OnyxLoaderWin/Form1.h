@@ -268,6 +268,12 @@ enum {
 
 	private: System::Void ButtonCancel_Click(System::Object *  sender, System::EventArgs *  e)
 			{
+
+				printf("Sending log\n");
+
+				char *data = do_get_log();
+
+				printf("%s\n",data);
 				/******************* SEND LOG
 				    NSLog(@"Sending Log");
     

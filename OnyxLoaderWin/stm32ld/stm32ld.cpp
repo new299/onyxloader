@@ -10,7 +10,7 @@
 
 
 //static ser_handler stm32_ser_id = ( ser_handler )-1;
-uint32_t stm32_ser_id = 0;
+int stm32_ser_id = 0;
 extern void safecast_resetboard(int mode);
 
 #define STM32_RETRY_COUNT             10
@@ -98,7 +98,7 @@ static int stm32h_connect_to_bl()
 // Implementation of the protocol
 
 
-extern int openSerialPorts(int baud);
+extern ser_handler openSerialPorts(int baud);
 
 // no port name or baud needed as ports are auto-enumerated by openports and
 // the baud is hard coded to 115200

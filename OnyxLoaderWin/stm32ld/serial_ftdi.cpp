@@ -24,23 +24,23 @@ extern int ser_dbg;
 // Open the serial port
 ser_handler ser_open( const char* sername )
 {
-  int fd;
-
-  if( ( fd = open( sername, O_RDWR | O_NOCTTY | O_NDELAY ) ) == -1 )
-    perror( "ser_open: unable to open port" );
-  else
-    fcntl( fd, F_SETFL, 0 );
-  return ( ser_handler )fd;
+//  int fd;
+	//
+//  if( ( fd = open( sername, O_RDWR | O_NOCTTY | O_NDELAY ) ) == -1 )
+//    perror( "ser_open: unable to open port" );
+ // else
+  //  fcntl( fd, F_SETFL, 0 );
+  return ( ser_handler )1;
 }
 
 // Close the serial port
 void ser_close( ser_handler id )
 {
-  close( ( int )id );
+//  close( ( int )id );
 }
 
 // Helper function: get baud ID from actual baud rate
-#define BAUDCASE(x)  case x: return B##x
+/*#define BAUDCASE(x)  case x: return B##x
 static u32 ser_baud_to_id( u32 baud )
 {
   switch( baud )
@@ -72,7 +72,7 @@ static int ser_number_of_bits_to_id( int nb )
   }
   return 0;
 }
-
+*/
 #if 0
 int ser_setup( ser_handler id, u32 baud, int databits, int parity, int stopbits )
 {
