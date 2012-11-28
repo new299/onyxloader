@@ -1,48 +1,9 @@
-﻿Build started 11/28/2012 1:21:29 AM.
+﻿Build started 11/28/2012 1:51:53 AM.
 Project "C:\Users\altium\Documents\GitHub\onyxloader\OnyxLoaderWin\TryUSB.vcxproj" on node 2 (Build target(s)).
-ClCompile:
-  C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" /AI"C:\Program Files (x86)\Windows Kits\8.0\References\CommonConfiguration\Neutral" /Zi /clr:oldSyntax /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _MBCS /Gm- /EHa /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\OnyxLoader.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /TP /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\mscorlib.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Data.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Drawing.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Windows.Forms.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Xml.dll" /analyze- /errorReport:prompt /clr:nostdlib Form1.cpp
-cl : Command line warning D9035: option 'clr:oldsyntax' has been deprecated and will be removed in a future release
-  Form1.cpp
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\doflash.h(128): warning C4101: 'dwBytesWritten' : unreferenced local variable
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\doflash.h(131): warning C4101: 'j' : unreferenced local variable
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\doflash.h(128): warning C4101: 'dwBytesRead' : unreferenced local variable
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\doflash.h(201): warning C4101: 'dwBytesWritten' : unreferenced local variable
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\doflash.h(204): warning C4101: 'j' : unreferenced local variable
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\doflash.h(201): warning C4101: 'dwBytesRead' : unreferenced local variable
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\doflash.h(368): warning C4018: '>=' : signed/unsigned mismatch
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\doflash.h(441): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\string.h(110) : see declaration of 'strcpy'
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\doflash.h(445): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\string.h(110) : see declaration of 'strcpy'
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\doflash.h(553): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\string.h(191) : see declaration of 'strncpy'
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\doflash.h(577): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdio.h(218) : see declaration of 'fopen'
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\doflash.h(578): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdio.h(218) : see declaration of 'fopen'
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\doflash.h(674): warning C4996: 'setbuf': This function or variable may be unsafe. Consider using setvbuf instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdio.h(299) : see declaration of 'setbuf'
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\doflash.h(523): warning C4101: 'index' : unreferenced local variable
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\Form1.h(285): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdio.h(357) : see declaration of 'sprintf'
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\Form1.h(286): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdio.h(357) : see declaration of 'sprintf'
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\Form1.h(287): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdio.h(357) : see declaration of 'sprintf'
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\Form1.h(288): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdio.h(357) : see declaration of 'sprintf'
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\Form1.h(290): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdio.h(357) : see declaration of 'sprintf'
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\Form1.h(291): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdio.h(357) : see declaration of 'sprintf'
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\Form1.h(371): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdio.h(218) : see declaration of 'fopen'
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\Form1.h(344): warning C4101: 'chBuffer' : unreferenced local variable
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\doflash.h(173): warning C4700: uninitialized local variable 'iDevicesOpen' used
-c:\users\altium\documents\github\onyxloader\onyxloaderwin\doflash.h(246): warning C4700: uninitialized local variable 'iDevicesOpen' used
+ResourceCompile:
+  C:\Program Files (x86)\Windows Kits\8.0\bin\x86\rc.exe /l"0x0409" /nologo /fo"Debug\app.res" app.rc 
 Link:
-  C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\altium\Documents\GitHub\onyxloader\OnyxLoaderWin\Debug\OnyxLoader.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /ASSEMBLYRESOURCE:"Debug\TryUSB.Form1.resources,TryUSB.Form1.resources" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\altium\Documents\GitHub\onyxloader\OnyxLoaderWin\Debug\OnyxLoader.pdb" /ASSEMBLYDEBUG /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X86 /SAFESEH Debug\app.res
+  C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\altium\Documents\GitHub\onyxloader\OnyxLoaderWin\Debug\OnyxLoader.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /ASSEMBLYRESOURCE:"Debug\OnyxLoader.Form1.resources,TryUSB.Form1.resources" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\altium\Documents\GitHub\onyxloader\OnyxLoaderWin\Debug\OnyxLoader.pdb" /ASSEMBLYDEBUG /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X86 /SAFESEH Debug\app.res
   Debug\AssemblyInfo.obj
   Debug\Form1.obj
   Debug\stdafx.obj
@@ -54,4 +15,4 @@ Done Building Project "C:\Users\altium\Documents\GitHub\onyxloader\OnyxLoaderWin
 
 Build succeeded.
 
-Time Elapsed 00:00:05.85
+Time Elapsed 00:00:02.46
