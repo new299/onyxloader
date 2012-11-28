@@ -1,6 +1,8 @@
 #pragma once
 
 #include "doflash.h"
+#include <wininet.h>
+#pragma comment(lib, "wininet.lib")
 
 namespace TryUSB
 {
@@ -255,10 +257,13 @@ enum {
 			// Form1
 			// 
 			this->AutoScaleBaseSize = System::Drawing::Size(5, 13);
-			this->ClientSize = System::Drawing::Size(287, 54);
+			this->ClientSize = System::Drawing::Size(287, 48);
 			this->Controls->Add(this->btnSend);
 			this->Controls->Add(this->btnClose);
 			this->Location = System::Drawing::Point(56, 48);
+			this->MaximizeBox = false;
+			this->MaximumSize = System::Drawing::Size(303, 86);
+			this->MinimumSize = System::Drawing::Size(303, 86);
 			this->Name = L"Form1";
 			this->Text = L"OnyxLoader";
 			this->Load += new System::EventHandler(this, &Form1::Form1_Load);
@@ -268,69 +273,42 @@ enum {
 
 	private: System::Void ButtonCancel_Click(System::Object *  sender, System::EventArgs *  e)
 			{
-
 				printf("Sending log\n");
 
 				char *data = do_get_log();
+				char *boundary = "0xKhTmLbOuNdArY";
 
-				printf("%s\n",data);
-				/******************* SEND LOG
-				    NSLog(@"Sending Log");
-    
-    char *data = do_get_log();
-    
-//    NSString* str = @"teststring";
-    NSString * str = [NSString stringWithFormat:@"%s", data];
-    free(data);
-    
-    NSData* myFileNSData = [str dataUsingEncoding:NSUTF8StringEncoding];
-    
-    NSMutableURLRequest* post = [NSMutableURLRequest requestWithURL: [NSURL URLWithString:@"http://41j.com/sc/sc.php"]];
-    
-    [post setHTTPMethod: @"POST"];
-    
-    NSString *boundary = [NSString stringWithString:@"0xKhTmLbOuNdArY"];
-    NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
-    [post addValue:contentType forHTTPHeaderField: @"Content-Type"];
-    
-    NSMutableData *body = [NSMutableData data];
-    
-    [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"uploadedfile\"; filename=\"sc1\"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:[[NSString stringWithString:@"Content-Type: application/octet-stream\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:myFileNSData] ;
-    [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-    
-    [post setHTTPBody:body];
-    
-    NSURLResponse* response;
-    
-    NSError* error;
-    
-    NSData* result = [NSURLConnection sendSynchronousRequest:post returningResponse:&response error:&error];
-    
-    NSLog(@"%@", [[NSString alloc] initWithData:result encoding:NSASCIIStringEncoding ]);
-	*/
+				char *buffer = (char*) malloc (sizeof(char)*strlen(data) + 2048);
+				char *hdrs   = (char*) malloc(2048);
 
-			//	Application::Exit();
+			    //print header
+			    sprintf(hdrs,"Content-Type: multipart/form-data; boundary=%s\r\n",boundary);
+				sprintf(buffer,"--%s\r\n",boundary);
+			    sprintf(buffer+strlen(buffer),"Content-Disposition: form-data; name=\"uploadedfile\"; filename=\"sc2\"\r\n");
+				sprintf(buffer+strlen(buffer),"Content-Type: application/octet-stream\r\n\r\n");
+
+			    sprintf(buffer+strlen(buffer),"%s\r\n",data);
+			    sprintf(buffer+strlen(buffer),"--%s--\r\n",boundary);
+
+
+				HINTERNET hSession = InternetOpen("WinSock",INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+
+			    HINTERNET hConnect = InternetConnect(hSession, "41j.com",INTERNET_DEFAULT_HTTP_PORT, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 1);
+
+			    HINTERNET hRequest = HttpOpenRequest(hConnect, (const char*)"POST","sc/sc.php", NULL, NULL, (const char**)"*/*\0", 0, 1);
+
+			    BOOL sent= HttpSendRequest(hRequest, hdrs, strlen(hdrs), buffer, strlen(buffer));
+			 
+			    //close any valid internet-handles
+			    InternetCloseHandle(hSession);
+			    InternetCloseHandle(hConnect);
+			    InternetCloseHandle(hRequest);
+
 			}
 	private: System::Void OpenPort()
 			 {
 				FT_STATUS ftStatus = FT_OK;
-			//	if(dwOpenFlags == FT_LIST_NUMBER_ONLY) {
-			//		int iSelIndex = comboBox1->SelectedIndex;
-			//		if(iSelIndex >= 0)
-						ftStatus = FT_Open(0, &handle);
-		//		}
-			//	else {
-				//	String * str;
-				//	char cBuf[64];
-				//	str = comboBox1->GetItemText(comboBox1->SelectedItem);
-				//	for(int i = 0; i < str->Length; i++) {
-				//		cBuf[i] = str->Chars[i];
-				//	}
-				//	ftStatus = FT_OpenEx(cBuf, dwOpenFlags, &handle);
-				//}
+				ftStatus = FT_Open(0, &handle);
 			 }
 
  	private: System::Void ClosePort()
@@ -342,95 +320,97 @@ enum {
 			 }
 	private: System::Void btnSend_Click(System::Object *  sender, System::EventArgs *  e)
 			 {
-				 /********* UPDATE FIRMWARE
-    NSLog(@"Update Firmware");
-    
+				
     
     // Download flash image from http://41j.com/safecast_latest.bin
-    // Determile cache file path
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *filePath = [NSString stringWithFormat:@"%@/%@", [paths objectAtIndex:0],@"index.html"];
-    
-    // Download and write to file
-    NSURL *url = [NSURL URLWithString:@"http://41j.com/safecast_latest.bin"];
-    NSData *urlData = [NSData dataWithContentsOfURL:url];
-    [urlData writeToFile:filePath atomically:YES];
 
+	HINTERNET hOpen = InternetOpen("WinSock",INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+
+
+    char *szUrl = "http://41j.com/safecast_latest.bin"; // URL
     
-    
+	HANDLE hFile     = INVALID_HANDLE_VALUE;
+    HANDLE hTempFile = INVALID_HANDLE_VALUE; 
+
+    BOOL fSuccess  = FALSE;
+    DWORD dwRetVal = 0;
+    UINT uRetVal   = 0;
+
+    DWORD dwBytesRead    = 0;
+    DWORD dwBytesWritten = 0; 
+
+    char szFileName[MAX_PATH];  
+    TCHAR lpTempPathBuffer[MAX_PATH];
+    char  chBuffer[1024]; 
+
+
+	// create temp file, the windows way
+	     //  Gets the temp path env string (no guarantee it's a valid path).
+    dwRetVal = GetTempPath(MAX_PATH,          // length of the buffer
+                           lpTempPathBuffer); // buffer for path 
+
+    //  Generates a temporary file name. 
+    uRetVal = GetTempFileName(lpTempPathBuffer, // directory for tmp files
+                              TEXT("DEMO"),     // temp file name prefix 
+                              0,                // create unique name 
+                              szFileName);      // buffer for name
+	
+       DWORD dwSize;
+       CHAR   szHead[] = "Accept: */*\r\n\r\n";
+       VOID * szTemp[25];
+       HINTERNET  hConnect;
+      FILE * pFile;
+
+       if ( !(hConnect = InternetOpenUrl ( hOpen, szUrl, szHead,
+             lstrlen (szHead), INTERNET_FLAG_DONT_CACHE, 0)))
+       {
+       //  cerr << "Error !" << endl;
+           return ;
+       }
+
+       if  ( !(pFile = fopen (szFileName, "wb" ) ) )
+      {
+        //   cerr << "Error !" << endl;
+          return ;
+      }
+       do
+       {
+          // Keep coping in 25 bytes chunks, while file has any data left.
+          // Note: bigger buffer will greatly improve performance.
+          if (!InternetReadFile (hConnect, szTemp, 50,  &dwSize) )
+          {
+              fclose (pFile);
+         //    cerr << "Error !" << endl;
+            return ;
+          }
+          if (!dwSize)
+              break;  // Condition of dwSize=0 indicate EOF. Stop.
+          else
+             fwrite(szTemp, sizeof (char), dwSize , pFile);
+       }   // do
+      while (TRUE);
+      fflush (pFile);
+      fclose (pFile);
+
+
+    // Flash    
     int argc=3;
     char *argv[3];
-    char *argv0 = "flash";
+    char *argv0 = szFileName;
     char *argv1 = "-f";
-    char *argv2 = (char *) filePath.UTF8String;
+    char *argv2 = (char *) szFileName;
     argv[0] = argv0;
     argv[1] = argv1;
     argv[2] = argv2;
     
     int result = do_flash_main(argc,argv);
 
-/*
-				FT_STATUS ftStatus = FT_OK;
-				DWORD ret;
-				char cBuf[100];
 
-				// This assumes you have a loopback connector on the USB cable you are using.
-//				listBox1->Items->Clear();
-				for(int i = 0; i < 100 ; i++) {
-					cBuf[i] = (char)i;
-				}
-
-				if(handle == NULL) {
-					OpenPort();
-				}
-				if(handle) {
-					StartThread();
-					ftStatus = FT_SetEventNotification(handle, FT_EVENT_RXCHAR, hEvent);
-					ftStatus = FT_SetBaudRate(handle, 9600);
-					ftStatus = FT_Write(handle, cBuf, 100, &ret);
-				}
-				else {
-					MessageBox::Show("Open Failed");
-					return;
-				}*/
 			 }
 
 private: System::Void FillComboBox(UInt32 dwDescFlags)
 	{
-	/*	FT_STATUS ftStatus;
-		UInt32 numDevs;
-		void * p1;			
-		
-//		comboBox1->Items->Clear();
-
-		p1 = (void*)&numDevs;
-		ftStatus = FT_ListDevices(p1, NULL, FT_LIST_NUMBER_ONLY);
-		
-		if(ftStatus == 0) 
-		{
-			char cBuf[64];
-			if (ftStatus == 0) 
-			{
-				UInt32 uDevNo;
-				for(uDevNo=0; uDevNo<numDevs; uDevNo++)
-				{	
-					String * str;
-					if(dwDescFlags == FT_LIST_NUMBER_ONLY) {
-						str = Convert::ToString(uDevNo);
-						comboBox1->Items->Add(str);
-					}
-					else {
-						ftStatus = FT_ListDevices(uDevNo, cBuf, dwDescFlags);
-						str = Convert::ToString(cBuf);
-						comboBox1->Items->Add(str);
-					}
-				}
-				if(comboBox1->Items->Count > 0) {
-					comboBox1->SelectedIndex = 0;
-				}
-			}
-		}
-		*/
+	
 	}
 private: System::Void StopThread()
 		 {
@@ -459,7 +439,7 @@ private: System::Void Form1_Load(System::Object *  sender, System::EventArgs *  
 		{	
 			handle = NULL;
 			hEvent = CreateEvent(NULL, FALSE, FALSE, "");
-	//		radioDescription->Checked = true;
+	
 		}
 
 private: System::Void comboBox1_SelectedIndexChanged(System::Object *  sender, System::EventArgs *  e)
@@ -470,32 +450,17 @@ private: System::Void comboBox1_SelectedIndexChanged(System::Object *  sender, S
 
 private: System::Void radioNumber_CheckedChanged(System::Object *  sender, System::EventArgs *  e)
 		 {
-			 /*
-			if(radioNumber->Checked) {
-				ClosePort();			 
-				dwOpenFlags = FT_LIST_NUMBER_ONLY;
-				FillComboBox(dwOpenFlags);
-			}*/
+
 		 }
 
 private: System::Void radioDescription_CheckedChanged(System::Object *  sender, System::EventArgs *  e)
 		 {
-			 /*
-			if(radioDescription->Checked) {
-				ClosePort();			 
-				dwOpenFlags = FT_OPEN_BY_DESCRIPTION;
-				FillComboBox(FT_LIST_BY_INDEX | dwOpenFlags);
-			}*/
+
 		 }
 
 private: System::Void radioSerial_CheckedChanged(System::Object *  sender, System::EventArgs *  e)
 		 {
-			 /*
-			if(radioSerial->Checked) {
-				ClosePort();			 
-				dwOpenFlags = FT_OPEN_BY_SERIAL_NUMBER;
-				FillComboBox(FT_LIST_BY_INDEX | dwOpenFlags);
-			}*/
+
 		 }
 };
 }
