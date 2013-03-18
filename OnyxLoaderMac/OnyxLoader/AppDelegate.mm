@@ -40,6 +40,7 @@
 
 - (IBAction)SetTime:(id)sender {
   NSLog(@"Set Time");
+  do_set_time();
 }
 
 

@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "serial.h"
+#include <time.h>
 
 #include <errno.h>
 #include <limits.h>
@@ -494,6 +495,21 @@ char *do_get_log_csv() {
     free(logdata);
 
     return outdata;
+}
+
+void do_set_time() {
+
+  uint32_t t = time(NULL);
+
+  int id = openSerialPorts8N1(115200);
+  ser_write(id,(const u8 *) "SETRTC\n",7);
+  sleep(1);
+
+  char stime[100];
+  sprintf(stime,"%u\n",t);
+  ser_write(id,(const u8 *) stime,strlen(stime));
+
+  closeSerialPorts();
 }
 
 char *do_get_log() {
