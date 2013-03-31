@@ -16,11 +16,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include "serial.h"
+#include <time.h>
 
 #include <errno.h>
 #include <limits.h>
 
 #include "ftd2xx.h"
+#include "jsmn.h"
 
 #define BL_VERSION_MAJOR  2
 #define BL_VERSION_MINOR  1
@@ -397,6 +399,117 @@ char *read_to_prompt(int id) {
     if((lb == 10) && (b == '>')) return data;
   }
     
+}
+
+char *do_get_log_csv() {
+    
+    // open serial ports
+    int id = openSerialPorts8N1(115200);
+    
+    ser_write(id,(const u8 *) "\r\n\r\n",4);
+    sleep(1);
+    ser_set_timeout_ms( id, SER_NO_TIMEOUT );
+    while( ser_read_byte(id) != -1 );
+    ser_set_timeout_ms( id, STM32_COMM_TIMEOUT );
+    
+    
+    printf("device id: %d\n",id);
+    
+    // Send Pause log
+    ser_write(id,(const u8 *) "LOGPAUSE\n",9);
+    free(read_to_prompt(id));
+    
+    // Send LOGXFER
+    ser_write(id,(const u8 *) "LOGXFER\n",8);
+    char *logdata = read_to_prompt(id);
+    
+    // Send Resume log
+    ser_write(id,(const u8 *) "LOGRESUME\n",10);
+    free(read_to_prompt(id));
+        
+    // close serial ports
+    closeSerialPorts();
+    
+    char *alldata = (char *) malloc(strlen(logdata)+100);
+    
+    strcpy(alldata,logdata);
+    int loglen = strlen(alldata);
+    alldata[loglen]=10;
+    alldata[loglen+1]=13;
+    alldata[loglen+2]=0;
+    
+    //parse json
+    
+    jsmn_parser parser;
+    jsmn_init(&parser);
+    
+    jsmntok_t *tokens = (jsmntok_t *) malloc(sizeof(jsmntok_t)*1000000);
+    
+    int r = jsmn_parse(&parser, alldata, tokens, 1000000);
+    
+    char *outdata = (char *) malloc(10000000);
+    char *outdatal = outdata;
+    if(r != JSMN_SUCCESS) {
+      strcpy(outdata,"READFAILED");
+    } else {
+    
+       bool processing=false;
+       for(size_t n=0;n<1000000;n++) {
+          if(tokens[n].type == JSMN_ARRAY) {
+            processing = true;
+            n++;
+            printf("detect array: %d\n",n);
+          }
+          
+          if(processing) {
+          
+            if(tokens[n].type = JSMN_STRING) {
+            
+              char *s = (char *) malloc(tokens[n].end-tokens[n].start);
+              strncpy(s,alldata+tokens[n].start,tokens[n].end-tokens[n].start);
+              
+              if(strcmp(s,"time") == 0) {
+                strncpy(outdatal,alldata+tokens[n+1].start,tokens[n+1].end-tokens[n+1].start);
+                outdatal+=(tokens[n+1].end-tokens[n+1].start);
+                outdatal[0]=',';
+                outdatal[1]=0;
+                outdatal++;
+              }
+
+              if(strcmp(s,"cpm") == 0) {
+                strncpy(outdatal,alldata+tokens[n+1].start,tokens[n+1].end-tokens[n+1].start);
+                outdatal+=(tokens[n+1].end-tokens[n+1].start);
+                outdatal[0]='\n';
+                outdatal[1]=0;
+                outdatal++;
+              }
+
+            }
+          
+          }
+       }
+       outdatal[0]=0;
+    
+    }
+    
+    free(logdata);
+
+    return outdata;
+}
+
+void do_set_time() {
+
+  uint32_t t = time(NULL);
+
+  int id = openSerialPorts8N1(115200);
+  ser_write(id,(const u8 *) "SETRTC\n",7);
+  sleep(1);
+
+  char stime[100];
+  sprintf(stime,"%u\n",t);
+  ser_write(id,(const u8 *) stime,strlen(stime));
+
+  closeSerialPorts();
 }
 
 char *do_get_log() {

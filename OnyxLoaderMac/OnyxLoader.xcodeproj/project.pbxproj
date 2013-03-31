@@ -22,7 +22,8 @@
 		D558BB07164754D100247553 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D558BB05164754D100247553 /* InfoPlist.strings */; };
 		D558BB0A164754D100247553 /* OnyxLoaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D558BB09164754D100247553 /* OnyxLoaderTests.m */; };
 		D58D1A76164828280090BFE6 /* serial_ftdi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D58D1A75164828280090BFE6 /* serial_ftdi.cpp */; };
-		D5D809231647A72B006755C3 /* libftd2xx.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D5D809221647A72B006755C3 /* libftd2xx.dylib */; };
+		D5EED3F816F677790054D740 /* libftd2xx.1.2.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D5EED3F716F677790054D740 /* libftd2xx.1.2.2.dylib */; };
+		D5EED3FC16F690370054D740 /* jsmn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5EED3F916F688F60054D740 /* jsmn.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,8 +67,9 @@
 		D558BB08164754D100247553 /* OnyxLoaderTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OnyxLoaderTests.h; sourceTree = "<group>"; };
 		D558BB09164754D100247553 /* OnyxLoaderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OnyxLoaderTests.m; sourceTree = "<group>"; };
 		D58D1A75164828280090BFE6 /* serial_ftdi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = serial_ftdi.cpp; sourceTree = "<group>"; };
-		D5D809201647A374006755C3 /* libftd2xx.1.1.12.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libftd2xx.1.1.12.dylib; path = ../../../../usr/lib/libftd2xx.1.1.12.dylib; sourceTree = "<group>"; };
-		D5D809221647A72B006755C3 /* libftd2xx.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libftd2xx.dylib; path = ../../../../usr/lib/libftd2xx.dylib; sourceTree = "<group>"; };
+		D5EED3F716F677790054D740 /* libftd2xx.1.2.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libftd2xx.1.2.2.dylib; sourceTree = "<group>"; };
+		D5EED3F916F688F60054D740 /* jsmn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsmn.cpp; sourceTree = SOURCE_ROOT; };
+		D5EED3FA16F688F60054D740 /* jsmn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsmn.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,8 +77,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5EED3F816F677790054D740 /* libftd2xx.1.2.2.dylib in Frameworks */,
 				D558BAE0164754D100247553 /* Cocoa.framework in Frameworks */,
-				D5D809231647A72B006755C3 /* libftd2xx.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,8 +112,7 @@
 		D558BAD0164754D000247553 = {
 			isa = PBXGroup;
 			children = (
-				D5D809221647A72B006755C3 /* libftd2xx.dylib */,
-				D5D809201647A374006755C3 /* libftd2xx.1.1.12.dylib */,
+				D5EED3F716F677790054D740 /* libftd2xx.1.2.2.dylib */,
 				D558BAE5164754D100247553 /* OnyxLoader */,
 				D558BB02164754D100247553 /* OnyxLoaderTests */,
 				D558BADE164754D100247553 /* Frameworks */,
@@ -151,6 +152,8 @@
 		D558BAE5164754D100247553 /* OnyxLoader */ = {
 			isa = PBXGroup;
 			children = (
+				D5EED3F916F688F60054D740 /* jsmn.cpp */,
+				D5EED3FA16F688F60054D740 /* jsmn.h */,
 				D5086076164797A3009427DF /* ftd2xx.h */,
 				D5086077164797A3009427DF /* WinTypes.h */,
 				D50860621647971A009427DF /* stm32ld */,
@@ -309,6 +312,7 @@
 				D558BAF3164754D100247553 /* AppDelegate.mm in Sources */,
 				D50860751647971A009427DF /* stm32ld.cpp in Sources */,
 				D58D1A76164828280090BFE6 /* serial_ftdi.cpp in Sources */,
+				D5EED3FC16F690370054D740 /* jsmn.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -423,10 +427,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "OnyxLoader/OnyxLoader-Prefix.pch";
 				INFOPLIST_FILE = "OnyxLoader/OnyxLoader-Info.plist";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -436,10 +443,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "OnyxLoader/OnyxLoader-Prefix.pch";
 				INFOPLIST_FILE = "OnyxLoader/OnyxLoader-Info.plist";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				"LIBRARY_SEARCH_PATHS[arch=*]" = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
