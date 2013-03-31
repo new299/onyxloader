@@ -360,10 +360,10 @@ static u32 writeh_read_data_page4( u8 *dst, u32 len )
 }
 
 // Progress function
-static void writeh_progress( u32 wrote )
+int expected_next=10;
+static void writeh_progress( u32 wrote)
 {
   unsigned pwrite = ( wrote * 100 ) / fpsize;
-  static int expected_next = 10;
 
   if( pwrite >= expected_next )
   {
@@ -457,13 +457,12 @@ char *do_get_log_csv() {
        for(size_t n=0;n<1000000;n++) {
           if(tokens[n].type == JSMN_ARRAY) {
             processing = true;
-            n++;
             printf("detect array: %d\n",n);
           }
           
           if(processing) {
           
-            if(tokens[n].type = JSMN_STRING) {
+            if(tokens[n].type == JSMN_STRING) {
             
               char *s = (char *) malloc(tokens[n].end-tokens[n].start);
               strncpy(s,alldata+tokens[n].start,tokens[n].end-tokens[n].start);
@@ -578,6 +577,11 @@ int do_flash_main(int argc, char **argv) {
   infile_name[0] = '\0';
   ser_dbg = 0;
 
+  //reset optind as we may call multiple times.
+  //opterr=0;
+  //optopt=0;
+  optind=1;
+
   while ((c = getopt(argc, argv, "b:f:dr:")) != -1 ) {
     switch (c) {
       
@@ -624,7 +628,7 @@ int do_flash_main(int argc, char **argv) {
 
     if((fp_page1 == NULL) || (fp_page4 == NULL)) {
       fprintf( stderr, "Unable to open %s\n", infile_name );
-      exit( 1 );
+      return 10;
     }  else    {
       fseek( fp_page4, 0, SEEK_END );
       fpsize = ftell( fp_page4 );
@@ -655,7 +659,7 @@ int do_flash_main(int argc, char **argv) {
     if( BL_MKVER( major, minor ) < BL_MINVERSION )
     {
       fprintf( stderr, "Unsupported bootloader version" );
-      exit( 1 );
+      return 11;
     }
   }
   
@@ -673,11 +677,11 @@ int do_flash_main(int argc, char **argv) {
     if( version != CHIP_ID )
     {
       fprintf( stderr, "Unsupported chip ID" );
-      exit( 1 );
+      return 13;
     }
   }
   if( badness )
-    exit( 1 );
+    return 14;
   
   if( !readflag ) {
     // Write unprotect
@@ -685,7 +689,7 @@ int do_flash_main(int argc, char **argv) {
     if( stm32_write_unprotect() != STM32_OK )
       {
 	fprintf( stderr, "Unable to execute write unprotect\n" );
-	exit( 1 );
+	return 15;
       }
     else
       printf( "Cleared write protection.\n" );
@@ -695,7 +699,7 @@ int do_flash_main(int argc, char **argv) {
     if( stm32_read_unprotect() != STM32_OK )
       {
 	fprintf( stderr, "Unable to execute read unprotect\n" );
-	exit( 1 );
+	return 16;
       }
     else
       printf( "Cleared read protection.\n" );
@@ -706,28 +710,30 @@ int do_flash_main(int argc, char **argv) {
     int res2 = stm32_erase_flash_page(3,0xFD);  // all the rest
     if(res1 != STM32_OK) {
 	    fprintf( stderr, "Unable to erase chip - pre prvkey\n" );
-	    exit(1);
+	    return 16;
     }
     if(res2 != STM32_OK) {
 	    fprintf( stderr, "Unable to erase chip - post pk\n" );
-	    exit(1);
+	    return 17;
     }
 
     printf( "Erased FLASH memory.\n" );
 
+
     // Program flash
     setbuf( stdout, NULL );
+    expected_next=10;
     printf( "Programming flash ... ");
     if( stm32_write_flash_page(0x08000000,1,writeh_read_data_page1, writeh_progress ) != STM32_OK ) {
       fprintf( stderr, "Unable to program - initial page.\n" );
-	    exit(1);
+	    return 18;
     } else {
       printf( "\nProgram pre-pk Done.\n" );
     }
 
     if( stm32_write_flash_page(0x08001800,0xFC,writeh_read_data_page4, writeh_progress ) != STM32_OK ) {
       fprintf( stderr, "Unable to program - post pk flash.\n" );
-	    exit(1);
+	    return 19;
     } else {
       printf( "\nProgram post-pk Done.\n" );
     }
@@ -737,7 +743,7 @@ int do_flash_main(int argc, char **argv) {
     printf( "Readback flash memory at offset %x\n", readoffset );
     if(stm32_read_flash( readoffset, 10240 ) != STM32_OK ) {
       fprintf( stderr, "Unable to read FLASH memory.\n" );
-      exit( 1 );
+      return 20;
     } else {
       printf( "\nDone.\n" );
     }

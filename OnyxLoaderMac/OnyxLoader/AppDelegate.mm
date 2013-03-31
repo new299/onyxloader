@@ -47,10 +47,25 @@
 - (IBAction)UpdateExperimental:(id)sender {
     NSLog(@"Update Firmware - experimental");
     
+    NSInteger res = NSRunAlertPanel(@"Programming Beta Firmware",
+    @"Warning: This firmware is for testing only, it is unsupported by Medcom International",
+    @"Continue", @"Cancel", NULL);
+    
+    switch(res) {
+      case NSAlertDefaultReturn:
+      break;
+      case NSAlertAlternateReturn:
+      return;
+      break;
+      case NSAlertOtherReturn:
+      return;
+      break;
+    }
+    
     // Download flash image from http://41j.com/safecast_exp.bin
     // Determile cache file path
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *filePath = [NSString stringWithFormat:@"%@/%@", [paths objectAtIndex:0],@"index.html"];
+    NSString *filePath = [NSString stringWithFormat:@"%@/%@", [paths objectAtIndex:0],@"firmwareB"];
     
     // Download and write to file
     NSURL *url = [NSURL URLWithString:@"http://41j.com/safecast_exp.bin"];
@@ -67,6 +82,21 @@
     argv[2] = argv2;
     
     int result = do_flash_main(argc,argv);
+
+    [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+
+    char fail[100];
+    sprintf(fail,"Failure Code: %d",result);
+
+    if(result == 0) {
+      NSRunAlertPanel(@"Programming complete",
+      @"Please disconnect the device.",
+      @"OK", NULL, NULL);
+    } else {
+      NSRunAlertPanel(@"Programming failed",
+      [NSString stringWithCString:fail encoding:NSUTF8StringEncoding],
+      @"OK", NULL, NULL);
+    }
 }
 
 - (IBAction)UpdateFirmware:(NSButton *)sender {
@@ -75,7 +105,7 @@
     // Download flash image from http://41j.com/safecast_latest.bin
     // Determile cache file path
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *filePath = [NSString stringWithFormat:@"%@/%@", [paths objectAtIndex:0],@"index.html"];
+    NSString *filePath = [NSString stringWithFormat:@"%@/%@", [paths objectAtIndex:0],@"firmwareL"];
     
     // Download and write to file
     NSURL *url = [NSURL URLWithString:@"http://41j.com/safecast_latest.bin"];
@@ -92,6 +122,21 @@
     argv[2] = argv2;
     
     int result = do_flash_main(argc,argv);
+
+    [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+
+    char fail[100];
+    sprintf(fail,"Failure Code: %d",result);
+
+    if(result == 0) {
+      NSRunAlertPanel(@"Programming complete",
+      @"Please disconnect the device.",
+      @"OK", NULL, NULL);
+    } else {
+      NSRunAlertPanel(@"Programming failed",
+      [NSString stringWithCString:fail encoding:NSUTF8StringEncoding],
+      @"OK", NULL, NULL);
+    }
 }
 
 - (IBAction)SendLog:(NSButton *)sender {
