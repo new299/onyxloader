@@ -150,7 +150,12 @@ int openSerialPorts8N1(int baud) {
         fprintf(stderr,"Error: FT_ListDevices(%d)\n", ftStatus);
         return -1;
     }
-    
+  
+    if (iNumDevs == 0) {
+        fprintf(stderr, "There aren't any FT devices\n");
+        return -1;
+    }
+  
     for(i = 0; ( (i <MAX_DEVICES) && (i < iNumDevs) ); i++) {
         printf("Device %d Serial Number - %s\n", i, cBufLD[i]);
     }
@@ -409,6 +414,9 @@ char *do_get_log_csv() {
     
     // open serial ports
     int id = openSerialPorts8N1(115200);
+  
+    if (id == -1)
+      return NULL;
     
     ser_write(id,(const u8 *) "\r\n\r\n",4);
     sleep(1);
@@ -502,25 +510,38 @@ char *do_get_log_csv() {
     return outdata;
 }
 
-void do_set_time() {
+int do_set_time() {
 
   time_t t = time(NULL);
 
   int id = openSerialPorts8N1(115200);
+  
+  if (id == -1)
+    return 0;
+  
   ser_write(id,(const u8 *) "SETRTC\n",7);
   sleep(1);
 
   char stime[100];
   sprintf(stime,"%lu\n",t);
-  ser_write(id,(const u8 *) stime,strlen(stime));
+  
+  size_t length = strlen(stime);
+  int result = 1;
+  
+  if (ser_write(id,(const u8 *) stime, length) != length)
+    result = 0;
 
   closeSerialPorts();
+  return result;
 }
 
 char *do_get_log() {
     
     // open serial ports
     int id = openSerialPorts8N1(115200);
+  
+    if (id == -1)
+      return NULL;
     
     ser_write(id,(const u8 *) "\r\n\r\n",4);
     sleep(1);

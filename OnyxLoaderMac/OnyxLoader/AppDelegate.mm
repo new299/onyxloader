@@ -33,15 +33,24 @@
   self.statusText.stringValue = @"";
 }
 
+- (void)runErrorAlertWithMessage: (NSString *)message {
+  NSRunAlertPanel(@"OnyxLoader: Something went wrong", message, @"OK", NULL, NULL);
+}
+
 - (void)backgroundSaveCSV: (NSURL*)url {
   [self performSelectorOnMainThread: @selector(startSpinnerDisableControls) withObject: nil waitUntilDone: YES];
   
   char *data = do_get_log_csv();
   
-  NSString * str = [NSString stringWithFormat:@"%s", data];
-  free(data);
-  
-  [str writeToURL: url atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+  if (data == NULL) {
+    [self performSelectorOnMainThread: @selector(runErrorAlertWithMessage:) withObject: @"Couldn't open the Onyx" waitUntilDone: YES];
+  } else {
+    // this is an extra copy that is unnecessary
+    NSString * str = [NSString stringWithFormat:@"%s", data];
+    free(data);
+    
+    [str writeToURL: url atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+  }
   
   [self performSelectorOnMainThread: @selector(stopSpinnerEnableControls) withObject: nil waitUntilDone: NO];
 }
@@ -67,7 +76,9 @@
 - (void)backgroundSetTime {
   [self performSelectorOnMainThread: @selector(startSpinnerDisableControls) withObject: nil waitUntilDone: YES];
   
-  do_set_time();
+  if (do_set_time() == 0) {
+    [self performSelectorOnMainThread: @selector(runErrorAlertWithMessage:) withObject: @"Couldn't open the Onyx" waitUntilDone: YES];
+  }
   
   [self performSelectorOnMainThread: @selector(stopSpinnerEnableControls) withObject: nil waitUntilDone: NO];  
 }
@@ -80,11 +91,11 @@
 
 - (void)runFirmwareAlertWithResult: (NSString *)result {
   if(result == nil) {
-    NSRunAlertPanel(@"Programming complete",
+    NSRunAlertPanel(@"OnyxLoader: Programming complete",
                     @"Please disconnect the device.",
                     @"OK", NULL, NULL);
   } else {
-    NSRunAlertPanel(@"Programming failed",
+    NSRunAlertPanel(@"OnyxLoader: Programming failed",
                     result,
                     @"OK", NULL, NULL);
   }
