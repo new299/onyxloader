@@ -78,46 +78,78 @@
   [self performSelectorInBackground: @selector(backgroundSetTime) withObject: nil];
 }
 
-- (void)runFirmwareAlertWithResult: (NSNumber*)result {
-  if([result integerValue] == 0) {
+- (void)runFirmwareAlertWithResult: (NSString *)result {
+  if(result == nil) {
     NSRunAlertPanel(@"Programming complete",
                     @"Please disconnect the device.",
                     @"OK", NULL, NULL);
   } else {
     NSRunAlertPanel(@"Programming failed",
-                    [NSString stringWithFormat: @"Failure Code: %ld", (long)[result integerValue]],
+                    result,
                     @"OK", NULL, NULL);
   }
 }
 
-
--(void)backgroundUpdateExperimental {
-  [self performSelectorOnMainThread: @selector(startSpinnerDisableControls) withObject: nil waitUntilDone: YES];
-  
-  // Download flash image from http://41j.com/safecast_exp.bin
-  // Determile cache file path
+- (NSString *)downloadFromUrl: (NSURL *)url toBaseName: (NSString *)base {
+  // Determine cache file path
+  // This could use NSTemporaryDirectory() instead.
   NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-  NSString *filePath = [NSString stringWithFormat:@"%@/%@", [paths objectAtIndex:0],@"firmwareB"];
+  NSString *filePath = [NSString stringWithFormat:@"%@/%@", [paths objectAtIndex:0], base];
   
   // Download and write to file
-  NSURL *url = [NSURL URLWithString:@"http://41j.com/safecast_exp.bin"];
   // This shouldn't be reading into one NSData object like this (unbounded size).  Should use NSURLConnection instead.
   NSData *urlData = [NSData dataWithContentsOfURL:url];
+  if (urlData == nil)
+    return nil;
+  
   [urlData writeToFile:filePath atomically:YES];
   
-  int argc=3;
+  return filePath;
+}
+
+- (int)writeFileToFlash: (NSString *)filePath {
+  int argc = 3;
+  char av0[20], av1[20], av2[MAXPATHLEN];
+  
   char *argv[3];
-  char *argv0 = "flash";
-  char *argv1 = "-f";
-  char *argv2 = (char *) filePath.UTF8String;
+  strlcpy(av0, "flash", sizeof(av0));
+  char *argv0 = av0;
+  strlcpy(av1, "-f", sizeof(av1));
+  char *argv1 = av1;
+  strlcpy(av2, filePath.UTF8String, sizeof(av2));
+  char *argv2 = av2;
   argv[0] = argv0;
   argv[1] = argv1;
   argv[2] = argv2;
   
-  int result = do_flash_main(argc,argv);
+  return do_flash_main(argc,argv);
+}
+
+
+- (void)backgroundUpdateExperimental {
+  NSString *resultString = nil;
+  [self performSelectorOnMainThread: @selector(startSpinnerDisableControls) withObject: nil waitUntilDone: YES];
+  
+  // Download flash image from http://41j.com/safecast_exp.bin
+  NSString *filePath = [self downloadFromUrl: [NSURL URLWithString:@"http://41j.com/safecast_exp.bin"]
+                                  toBaseName: @"firmwareB"];
+  
+  if (filePath != nil)
+    NSLog(@"Downloaded experimental firmware successfully");
+  else
+    NSLog(@"Experimental firmware download failed");
+  
+    
+  if (filePath != nil) {
+    int result = [self writeFileToFlash: filePath];
+    if (result != 0)
+      resultString = [NSString stringWithFormat: @"Failure Code: %d", result];
+  } else {
+    resultString = @"Failed to download firmware";
+  }
   
   [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
-  [self performSelectorOnMainThread: @selector(runFirmwareAlertWithResult:) withObject: [NSNumber numberWithInt: result] waitUntilDone: YES];
+  [self performSelectorOnMainThread: @selector(runFirmwareAlertWithResult:) withObject: resultString waitUntilDone: YES];
   
   [self performSelectorOnMainThread: @selector(stopSpinnerEnableControls) withObject: nil waitUntilDone: NO];
 }
@@ -145,32 +177,29 @@
 }
 
 - (void)backgroundUpdateFirmware {
+  NSString *resultString = nil;
   [self performSelectorOnMainThread: @selector(startSpinnerDisableControls) withObject: nil waitUntilDone: YES];
   
   // Download flash image from http://41j.com/safecast_latest.bin
-  // Determine cache file path
-  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-  NSString *filePath = [NSString stringWithFormat:@"%@/%@", [paths objectAtIndex:0],@"firmwareL"];
+  NSString *filePath = [self downloadFromUrl: [NSURL URLWithString:@"http://41j.com/safecast_latest.bin"]
+                                  toBaseName: @"firmwareL"];
   
-  // Download and write to file
-  NSURL *url = [NSURL URLWithString:@"http://41j.com/safecast_latest.bin"];
-  // This shouldn't be reading into one NSData object like this (unbounded size).  Should use NSURLConnection instead.
-  NSData *urlData = [NSData dataWithContentsOfURL:url];
-  [urlData writeToFile:filePath atomically:YES];
-  int argc=3;
-  char *argv[3];
-  char *argv0 = "flash";
-  char *argv1 = "-f";
-  char *argv2 = (char *) filePath.UTF8String;
-  argv[0] = argv0;
-  argv[1] = argv1;
-  argv[2] = argv2;
-  
-  int result = do_flash_main(argc,argv);
+  if (filePath != nil)
+    NSLog(@"Downloaded latest firmware successfully");
+  else
+    NSLog(@"Latest firmware download failed");
+
+  if (filePath != nil) {
+    int result = [self writeFileToFlash: filePath];
+    if (result != 0)
+      resultString = [NSString stringWithFormat: @"Failure Code: %d", result];
+  } else {
+    resultString = @"Failed to download firmware";
+  }
 
   [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
 
-  [self performSelectorOnMainThread: @selector(runFirmwareAlertWithResult:) withObject: [NSNumber numberWithInt: result] waitUntilDone: YES];
+  [self performSelectorOnMainThread: @selector(runFirmwareAlertWithResult:) withObject: resultString waitUntilDone: YES];
   
   [self performSelectorOnMainThread: @selector(stopSpinnerEnableControls) withObject: nil waitUntilDone: NO];
 }
@@ -199,7 +228,7 @@
     
     [post setHTTPMethod: @"POST"];
     
-    NSString *boundary = [NSString stringWithString:@"0xKhTmLbOuNdArY"];
+    NSString *boundary = @"0xKhTmLbOuNdArY";
     NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
     [post addValue:contentType forHTTPHeaderField: @"Content-Type"];
     
@@ -207,7 +236,7 @@
     
     [body appendData:[[NSString stringWithFormat:@"\r\n--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
     [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"uploadedfile\"; filename=\"sc1\"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:[[NSString stringWithString:@"Content-Type: application/octet-stream\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[@"Content-Type: application/octet-stream\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
     [body appendData:myFileNSData] ;
     [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
     
