@@ -116,6 +116,10 @@ int getandcheckCBUS( FT_HANDLE ftHandle0 ) {
   } else {
     printf( "EEPROM values are up to date, not modifying them\n" );
   }
+  free(Data.Manufacturer);
+  free(Data.ManufacturerId);
+  free(Data.Description);
+  free(Data.SerialNumber);
   return 0;
 
 }
@@ -492,6 +496,8 @@ char *do_get_log_csv() {
     }
     
     free(logdata);
+    free(tokens);
+    free(alldata);
 
     return outdata;
 }
