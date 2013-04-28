@@ -16,9 +16,40 @@
     // Insert code here to initialize your application
 }
 
-- (IBAction)SaveCSV:(id)sender {
+- (void)startSpinnerDisableControls {
+  [self.loadingSpinner startAnimation: self];
+  [self.saveDataButton setEnabled: NO];
+  [self.setTimeButton setEnabled: NO];
+  [self.updateLatestButton setEnabled: NO];
+  [self.updateBetaButton setEnabled: NO];
+}
 
+- (void)stopSpinnerEnableControls {
+  [self.loadingSpinner stopAnimation: self];
+  [self.saveDataButton setEnabled: YES];
+  [self.setTimeButton setEnabled: YES];
+  [self.updateLatestButton setEnabled: YES];
+  [self.updateBetaButton setEnabled: YES];
+  self.statusText.stringValue = @"";
+}
+
+- (void)backgroundSaveCSV: (NSURL*)url {
+  [self performSelectorOnMainThread: @selector(startSpinnerDisableControls) withObject: nil waitUntilDone: YES];
+  
+  char *data = do_get_log_csv();
+  
+  NSString * str = [NSString stringWithFormat:@"%s", data];
+  free(data);
+  
+  [str writeToURL: url atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+  
+  [self performSelectorOnMainThread: @selector(stopSpinnerEnableControls) withObject: nil waitUntilDone: NO];
+}
+
+- (IBAction)SaveCSV:(id)sender {
     NSLog(@"SaveCSV");
+    self.statusText.stringValue = @"Saving Log";
+  
     NSSavePanel * savePanel = [NSSavePanel savePanel];
 
     [savePanel setAllowedFileTypes:[NSArray arrayWithObject:@"csv"]];
@@ -26,21 +57,69 @@
     [savePanel beginWithCompletionHandler:^(NSInteger result){
         if (result == NSFileHandlingPanelOKButton) {
             NSLog(@"Got URL: %@", [savePanel URL]);
-            
-            char *data = do_get_log_csv();
-    
-            NSString * str = [NSString stringWithFormat:@"%s", data];
-            free(data);
-            
-            [str writeToURL:[savePanel URL] atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+          
+          [self performSelectorInBackground: @selector(backgroundSaveCSV:) withObject: [savePanel URL]];
         }
     }];
 
 }
 
+- (void)backgroundSetTime {
+  [self performSelectorOnMainThread: @selector(startSpinnerDisableControls) withObject: nil waitUntilDone: YES];
+  
+  do_set_time();
+  
+  [self performSelectorOnMainThread: @selector(stopSpinnerEnableControls) withObject: nil waitUntilDone: NO];  
+}
+
 - (IBAction)SetTime:(id)sender {
   NSLog(@"Set Time");
-  do_set_time();
+  self.statusText.stringValue = @"Setting Time";
+  [self performSelectorInBackground: @selector(backgroundSetTime) withObject: nil];
+}
+
+- (void)runFirmwareAlertWithResult: (NSNumber*)result {
+  if([result integerValue] == 0) {
+    NSRunAlertPanel(@"Programming complete",
+                    @"Please disconnect the device.",
+                    @"OK", NULL, NULL);
+  } else {
+    NSRunAlertPanel(@"Programming failed",
+                    [NSString stringWithFormat: @"Failure Code: %ld", (long)[result integerValue]],
+                    @"OK", NULL, NULL);
+  }
+}
+
+
+-(void)backgroundUpdateExperimental {
+  [self performSelectorOnMainThread: @selector(startSpinnerDisableControls) withObject: nil waitUntilDone: YES];
+  
+  // Download flash image from http://41j.com/safecast_exp.bin
+  // Determile cache file path
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+  NSString *filePath = [NSString stringWithFormat:@"%@/%@", [paths objectAtIndex:0],@"firmwareB"];
+  
+  // Download and write to file
+  NSURL *url = [NSURL URLWithString:@"http://41j.com/safecast_exp.bin"];
+  // This shouldn't be reading into one NSData object like this (unbounded size).  Should use NSURLConnection instead.
+  NSData *urlData = [NSData dataWithContentsOfURL:url];
+  [urlData writeToFile:filePath atomically:YES];
+  
+  int argc=3;
+  char *argv[3];
+  char *argv0 = "flash";
+  char *argv1 = "-f";
+  char *argv2 = (char *) filePath.UTF8String;
+  argv[0] = argv0;
+  argv[1] = argv1;
+  argv[2] = argv2;
+  
+  int result = do_flash_main(argc,argv);
+  
+  [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+  [self performSelectorOnMainThread: @selector(runFirmwareAlertWithResult:) withObject: [NSNumber numberWithInt: result] waitUntilDone: YES];
+  
+  [self performSelectorOnMainThread: @selector(stopSpinnerEnableControls) withObject: nil waitUntilDone: NO];
 }
 
 
@@ -61,84 +140,51 @@
       return;
       break;
     }
-    
-    // Download flash image from http://41j.com/safecast_exp.bin
-    // Determile cache file path
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *filePath = [NSString stringWithFormat:@"%@/%@", [paths objectAtIndex:0],@"firmwareB"];
-    
-    // Download and write to file
-    NSURL *url = [NSURL URLWithString:@"http://41j.com/safecast_exp.bin"];
-    NSData *urlData = [NSData dataWithContentsOfURL:url];
-    [urlData writeToFile:filePath atomically:YES];
+  self.statusText.stringValue = @"Beta Firmware";
+  [self performSelectorInBackground: @selector(backgroundUpdateExperimental) withObject: nil];
+}
 
-    int argc=3;
-    char *argv[3];
-    char *argv0 = "flash";
-    char *argv1 = "-f";
-    char *argv2 = (char *) filePath.UTF8String;
-    argv[0] = argv0;
-    argv[1] = argv1;
-    argv[2] = argv2;
-    
-    int result = do_flash_main(argc,argv);
+- (void)backgroundUpdateFirmware {
+  [self performSelectorOnMainThread: @selector(startSpinnerDisableControls) withObject: nil waitUntilDone: YES];
+  
+  // Download flash image from http://41j.com/safecast_latest.bin
+  // Determine cache file path
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+  NSString *filePath = [NSString stringWithFormat:@"%@/%@", [paths objectAtIndex:0],@"firmwareL"];
+  
+  // Download and write to file
+  NSURL *url = [NSURL URLWithString:@"http://41j.com/safecast_latest.bin"];
+  // This shouldn't be reading into one NSData object like this (unbounded size).  Should use NSURLConnection instead.
+  NSData *urlData = [NSData dataWithContentsOfURL:url];
+  [urlData writeToFile:filePath atomically:YES];
+  int argc=3;
+  char *argv[3];
+  char *argv0 = "flash";
+  char *argv1 = "-f";
+  char *argv2 = (char *) filePath.UTF8String;
+  argv[0] = argv0;
+  argv[1] = argv1;
+  argv[2] = argv2;
+  
+  int result = do_flash_main(argc,argv);
 
-    [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+  [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
 
-    char fail[100];
-    sprintf(fail,"Failure Code: %d",result);
-
-    if(result == 0) {
-      NSRunAlertPanel(@"Programming complete",
-      @"Please disconnect the device.",
-      @"OK", NULL, NULL);
-    } else {
-      NSRunAlertPanel(@"Programming failed",
-      [NSString stringWithCString:fail encoding:NSUTF8StringEncoding],
-      @"OK", NULL, NULL);
-    }
+  [self performSelectorOnMainThread: @selector(runFirmwareAlertWithResult:) withObject: [NSNumber numberWithInt: result] waitUntilDone: YES];
+  
+  [self performSelectorOnMainThread: @selector(stopSpinnerEnableControls) withObject: nil waitUntilDone: NO];
 }
 
 - (IBAction)UpdateFirmware:(NSButton *)sender {
-    NSLog(@"Update Firmware - stable");
-    
-    // Download flash image from http://41j.com/safecast_latest.bin
-    // Determile cache file path
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *filePath = [NSString stringWithFormat:@"%@/%@", [paths objectAtIndex:0],@"firmwareL"];
-    
-    // Download and write to file
-    NSURL *url = [NSURL URLWithString:@"http://41j.com/safecast_latest.bin"];
-    NSData *urlData = [NSData dataWithContentsOfURL:url];
-    [urlData writeToFile:filePath atomically:YES];
-
-    int argc=3;
-    char *argv[3];
-    char *argv0 = "flash";
-    char *argv1 = "-f";
-    char *argv2 = (char *) filePath.UTF8String;
-    argv[0] = argv0;
-    argv[1] = argv1;
-    argv[2] = argv2;
-    
-    int result = do_flash_main(argc,argv);
-
-    [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
-
-    char fail[100];
-    sprintf(fail,"Failure Code: %d",result);
-
-    if(result == 0) {
-      NSRunAlertPanel(@"Programming complete",
-      @"Please disconnect the device.",
-      @"OK", NULL, NULL);
-    } else {
-      NSRunAlertPanel(@"Programming failed",
-      [NSString stringWithCString:fail encoding:NSUTF8StringEncoding],
-      @"OK", NULL, NULL);
-    }
+  NSLog(@"Update Firmware - stable");
+  self.statusText.stringValue = @"Latest Firmware";
+  [self performSelectorInBackground: @selector(backgroundUpdateFirmware) withObject: nil];
 }
 
+
+// The button for this is currently disabled.
+// This should be similarly backgrounded if this button is enabled in
+// a future release.
 - (IBAction)SendLog:(NSButton *)sender {
     NSLog(@"Sending Log");
     
@@ -174,6 +220,15 @@
     NSData* result = [NSURLConnection sendSynchronousRequest:post returningResponse:&response error:&error];
     
     NSLog(@"%@", [[NSString alloc] initWithData:result encoding:NSASCIIStringEncoding ]);
+}
+
+- (void) dealloc {
+  self.loadingSpinner = nil;
+  self.saveDataButton = nil;
+  self.setTimeButton = nil;
+  self.updateLatestButton = nil;
+  self.updateBetaButton = nil;
+  self.statusText = nil;
 }
 
 @end
