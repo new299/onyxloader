@@ -31,7 +31,7 @@ extern void safecast_resetboard(int mode);
     return STM32_COMM_ERROR;
 
 // Helper: send a command to the STM32 chip
-static int stm32h_send_command( u8 cmd )
+static void stm32h_send_command( u8 cmd )
 {
   ser_write_byte( stm32_ser_id, cmd );
   ser_write_byte( stm32_ser_id, ~cmd );
@@ -100,14 +100,16 @@ extern int openSerialPorts(int baud);
 // the baud is hard coded to 115200
 int stm32_init( const char *portname, u32 baud )
 {
-  stm32_ser_id = openSerialPorts(baud);
-  
-  safecast_resetboard(1);
+  int serialID = openSerialPorts((int)baud);
 
-  if( stm32_ser_id < 0 ) {
+  if( serialID < 0 ) {
     printf( "Failed to find a valid device, exiting.\n" );
     return -1;
   }
+
+  stm32_ser_id = (uint32_t)serialID;
+  
+  safecast_resetboard(1);
 
   // Connect to bootloader
   return stm32h_connect_to_bl();
@@ -119,7 +121,7 @@ int stm32_get_version( u8 *major, u8 *minor )
 {
   u8 i, version;
   int temp, total;
-  int tries = STM32_RETRY_COUNT;  
+  //int tries = STM32_RETRY_COUNT; (unused)
 
   STM32_CHECK_INIT;
   stm32h_send_command( STM32_CMD_GET_COMMAND );
@@ -140,7 +142,7 @@ int stm32_get_version( u8 *major, u8 *minor )
 // Get chip ID
 int stm32_get_chip_id( u16 *version )
 {
-  u8 temp;
+  //u8 temp; (unused)
   int vh, vl;
 
   STM32_CHECK_INIT;
@@ -168,7 +170,7 @@ int stm32_write_unprotect()
 // Erase flash
 int stm32_erase_flash()
 {
-  u8 temp;
+  //u8 temp; (unused)
 
   STM32_CHECK_INIT;
   stm32h_send_command( STM32_CMD_ERASE_FLASH );
@@ -210,7 +212,7 @@ int stm32_write_flash_page(u32 address_in,int page_count,p_read_data read_data_f
 {
   u32 wrote = 0;
   u8 data[ STM32_WRITE_BUFSIZE + 1 ];
-  int datalen;
+  u32 datalen;
   u32 address = address_in;
   //u32 datalen, address = STM32_FLASH_START_ADDRESS;
 
@@ -298,8 +300,8 @@ int stm32_write_flash( p_read_data read_data_func, p_progress progress_func )
 
 int stm32_read_flash( u32 offset, u32 datalen )
 {
-  u32 wrote = 0;
-  u8 data[ STM32_WRITE_BUFSIZE + 1 ];
+  //u32 wrote = 0; (unused)
+  //u8 data[ STM32_WRITE_BUFSIZE + 1 ]; (unused)
   u32 address = STM32_FLASH_START_ADDRESS + offset;
   int i;
 

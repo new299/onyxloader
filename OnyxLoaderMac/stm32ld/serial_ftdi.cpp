@@ -153,7 +153,7 @@ u32 ser_read( int id, u8* dest, u32 maxsize )
     }
 
     if(ftStatus == FT_OK) {
-      if((ftStatus = FT_Read(ftHandle[id], dest, maxsize, &dwBytesRead)) != FT_OK) {
+      if((ftStatus = FT_Read(ftHandle[id], dest, (DWORD)maxsize, &dwBytesRead)) != FT_OK) {
 	printf("Error FT_Read(%d)\n", ftStatus);
       }
       else {
@@ -178,12 +178,13 @@ u32 ser_read( int id, u8* dest, u32 maxsize )
     //fprintf(stderr,"setting timeout to %u\n", ser_timeout );
     //fprintf(stderr,"read size: %d\n",maxsize);
     //fprintf(stderr,"id: %d\n",id);
-    FT_SetTimeouts(ftHandle[id], ser_timeout, ser_timeout);
+    FT_SetTimeouts(ftHandle[id], (ULONG)ser_timeout, (ULONG)ser_timeout);
 
-    if((ftStatus = FT_Read(ftHandle[id], dest, maxsize, &dwBytesRead)) != FT_OK) {
+    if((ftStatus = FT_Read(ftHandle[id], dest, (DWORD)maxsize, &dwBytesRead)) != FT_OK) {
      // fprintf(stderr,"Error FT_Read(%d)\n", ftStatus);
     }
     else {
+      // this is a dead store
       ftStatus = FT_GetQueueStatus(ftHandle[id], &dwRxSize);
 
   	//  fprintf(stderr,"  - ser_read [%d | %02x] . %d\n", dwBytesRead, *dest & 0xFF, dwRxSize);
@@ -198,7 +199,7 @@ u32 ser_read( int id, u8* dest, u32 maxsize )
 int ser_read_byte( int id )
 {
   u8 data;
-  int res = ser_read( id, &data, 1 );
+  u32 res = ser_read( id, &data, 1 );
 
   return res == 1 ? data : -1;
 }
@@ -206,13 +207,13 @@ int ser_read_byte( int id )
 // Write up to the specified number of bytes, return bytes actually written
 u32 ser_write( int id, const u8 *src, u32 size )
 {
-  u32 res;
+  //u32 res; (unused)
   FT_STATUS	ftStatus;
   DWORD dwBytesWritten;
   
-  FT_SetTimeouts(ftHandle[id], ser_timeout, ser_timeout);
+  FT_SetTimeouts(ftHandle[id], (ULONG)ser_timeout, (ULONG)ser_timeout);
 
-  if((ftStatus = FT_Write(ftHandle[id], (char *) src, size, &dwBytesWritten)) != FT_OK) {
+  if((ftStatus = FT_Write(ftHandle[id], (char *) src, (DWORD)size, &dwBytesWritten)) != FT_OK) {
     printf("Error FT_Write(%d)\n", ftStatus);
   }
   if( ser_dbg )

@@ -128,13 +128,13 @@ int getandcheckCBUS( FT_HANDLE ftHandle0 ) {
 int openSerialPorts8N1(int baud) {
     char * 	pcBufRead = NULL;
     char * 	pcBufLD[MAX_DEVICES + 1];
-    DWORD	dwRxSize = 0;
-    DWORD 	dwBytesWritten, dwBytesRead;
+    //DWORD	dwRxSize = 0; (unused)
+    //DWORD 	dwBytesWritten, dwBytesRead; (unused)
     FT_STATUS	ftStatus;
     int	iNumDevs = 0;
-    int	i, j;
-    int	iDevicesOpen;
-    unsigned char ucMode = 0x00;
+    int	i;  //, j; (unused)
+    int	iDevicesOpen = 0;
+    // unsigned char ucMode = 0x00; (unused)
     
     printf( "warning: opening up to %d ports and assuming all are Safecast devices.\n", MAX_DEVICES );
     printf( "todo: make this more selective and safer.\n" );
@@ -163,7 +163,7 @@ int openSerialPorts8N1(int baud) {
              use lsmod to check this and rmmod ftdi_sio to remove
              also rmmod usbserial
              */
-            fprintf(stderr,"Error FT_OpenEx(%d), device\n", ftStatus, i);
+            fprintf(stderr,"Error FT_OpenEx(%d), device %d\n", ftStatus, i);
             return -1;
         }
         
@@ -201,13 +201,13 @@ int openSerialPorts8N1(int baud) {
 int openSerialPorts(int baud) {
   char * 	pcBufRead = NULL;
   char * 	pcBufLD[MAX_DEVICES + 1];
-  DWORD	dwRxSize = 0;
-  DWORD 	dwBytesWritten, dwBytesRead;
+  //DWORD	dwRxSize = 0; (unused) 
+  //DWORD 	dwBytesWritten, dwBytesRead; (unused) 
   FT_STATUS	ftStatus;
   int	iNumDevs = 0;
-  int	i, j;
-  int	iDevicesOpen;	
-  unsigned char ucMode = 0x00;
+  int	i; //, j; (unused)
+  int	iDevicesOpen = 0;
+  // unsigned char ucMode = 0x00; (unused)
 
   printf( "warning: opening up to %d ports and assuming all are Safecast devices.\n", MAX_DEVICES );
   printf( "todo: make this more selective and safer.\n" );
@@ -236,7 +236,7 @@ int openSerialPorts(int baud) {
 	 use lsmod to check this and rmmod ftdi_sio to remove
 	 also rmmod usbserial
       */
-      fprintf(stderr,"Error FT_OpenEx(%d), device\n", ftStatus, i);
+      fprintf(stderr,"Error FT_OpenEx(%d), device %d\n", ftStatus, i);
       return -1;
     }
     
@@ -367,7 +367,7 @@ static u32 writeh_read_data_page4( u8 *dst, u32 len )
 int expected_next=10;
 static void writeh_progress( u32 wrote)
 {
-  unsigned pwrite = ( wrote * 100 ) / fpsize;
+  unsigned long pwrite = ( wrote * 100 ) / fpsize;
 
   if( pwrite >= expected_next )
   {
@@ -437,7 +437,7 @@ char *do_get_log_csv() {
     char *alldata = (char *) malloc(strlen(logdata)+100);
     
     strcpy(alldata,logdata);
-    int loglen = strlen(alldata);
+    size_t loglen = strlen(alldata);
     alldata[loglen]=10;
     alldata[loglen+1]=13;
     alldata[loglen+2]=0;
@@ -461,7 +461,7 @@ char *do_get_log_csv() {
        for(size_t n=0;n<1000000;n++) {
           if(tokens[n].type == JSMN_ARRAY) {
             processing = true;
-            printf("detect array: %d\n",n);
+            printf("detect array: %ld\n",n);
           }
           
           if(processing) {
@@ -504,14 +504,14 @@ char *do_get_log_csv() {
 
 void do_set_time() {
 
-  uint32_t t = time(NULL);
+  time_t t = time(NULL);
 
   int id = openSerialPorts8N1(115200);
   ser_write(id,(const u8 *) "SETRTC\n",7);
   sleep(1);
 
   char stime[100];
-  sprintf(stime,"%u\n",t);
+  sprintf(stime,"%lu\n",t);
   ser_write(id,(const u8 *) stime,strlen(stime));
 
   closeSerialPorts();
@@ -555,7 +555,7 @@ char *do_get_log() {
     char *alldata = (char *) malloc(strlen(logdata)+strlen(logsig)+100);
     
     strcpy(alldata,logdata);
-    int loglen = strlen(alldata);
+    size_t loglen = strlen(alldata);
     alldata[loglen]=10;
     alldata[loglen+1]=13;
     strcpy(alldata+loglen+2,logsig);
@@ -570,14 +570,14 @@ int do_flash_main(int argc, char **argv) {
   int aflag = 0;
   char *argval = NULL;
   char infile_name[256];
-  int index;
+  //int index; (unused)
   int c;
-  int baud = 115200;
+  long baud = 115200;
   u8 minor, major;
   u16 version;
   int badness = 0;
   int readflag = 0;
-  int readoffset = 0;
+  long readoffset = 0;
 
   opterr = 0;
   infile_name[0] = '\0';
@@ -599,7 +599,7 @@ int do_flash_main(int argc, char **argv) {
       argval = optarg;
       baud = strtol(argval, NULL, 0);
       if( baud < 1200 || baud > 115200 ) {
-	printf( "Baud should be between 1200 and 115200; got: %d\n", baud );
+	printf( "Baud should be between 1200 and 115200; got: %ld\n", baud );
 	return 0;
       }
       break;
@@ -746,7 +746,7 @@ int do_flash_main(int argc, char **argv) {
 
 
   } else {
-    printf( "Readback flash memory at offset %x\n", readoffset );
+    printf( "Readback flash memory at offset %lx\n", readoffset );
     if(stm32_read_flash( readoffset, 10240 ) != STM32_OK ) {
       fprintf( stderr, "Unable to read FLASH memory.\n" );
       return 20;
