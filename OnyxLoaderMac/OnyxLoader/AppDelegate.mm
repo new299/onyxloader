@@ -9,12 +9,62 @@
 #import "AppDelegate.h"
 #include "../doflash.h"
 
+#import <IOKit/kext/KextManager.h>
+
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+  NSString *ftdiKextKey = @"com.FTDI.driver.FTDIUSBSerialDriver";
     // Insert code here to initialize your application
+  NSDictionary *kexts = (__bridge NSDictionary *)KextManagerCopyLoadedKextInfo((__bridge CFArrayRef)[NSArray arrayWithObject: ftdiKextKey], NULL);
+  if ([kexts objectForKey: ftdiKextKey] != nil) {
+    // unload the kext
+    
+#if 0
+    AuthorizationRef myAuthorizationRef;
+    OSStatus myStatus;
+    myStatus = AuthorizationCreate(NULL, kAuthorizationEmptyEnvironment,
+                                   kAuthorizationFlagDefaults, &myAuthorizationRef);
+    AuthorizationItem myItems[1];
+    
+    myItems[0].name = "com.myOrganization.myProduct.myRight1";
+    myItems[0].valueLength = 0;
+    myItems[0].value = NULL;
+    myItems[0].flags = 0;
+    
+    AuthorizationRights myRights;
+    myRights.count = sizeof (myItems) / sizeof (myItems[0]);
+    myRights.items = myItems;
+    
+    AuthorizationFlags myFlags;
+    myFlags = kAuthorizationFlagDefaults |
+    kAuthorizationFlagInteractionAllowed |
+    kAuthorizationFlagExtendRights;
+    
+    myStatus = AuthorizationCopyRights (myAuthorizationRef, &myRights,
+                                        kAuthorizationEmptyEnvironment, myFlags, NULL);
+    // do stuff
+    // need to do SMJobBless
+    
+    myStatus = AuthorizationFree (myAuthorizationRef,
+                                  kAuthorizationFlagDestroyRights);
+#else
+    NSRunAlertPanel(@"FTDI Virtual Serial Driver is loaded",
+                    @"The FTDI virtual serial port kext seems to be loaded so things will likely fail.  You can temporarily fix this by doing 'sudo kextunload -b com.FTDI.driver.FTDIUSBSerialDriver' and then 'sudo kextutil -b com.FTDI.driver.FTDIUSBSerialDriver' to when you want to use the virtual serial driver again.", @"OK", nil, nil);
+#endif
+    
+    
+  }
 }
+
+
+- (void)applicationWillTerminate:(NSNotification *)notification
+{
+  
+}
+
+
 
 - (void)startSpinnerDisableControls {
   [self.loadingSpinner startAnimation: self];
@@ -34,7 +84,7 @@
 }
 
 - (void)runErrorAlertWithMessage: (NSString *)message {
-  NSRunAlertPanel(@"OnyxLoader: Something went wrong", message, @"OK", NULL, NULL);
+  NSRunAlertPanel(@"OnyxLoader: Something went wrong", message, @"OK", nil, nil);
 }
 
 - (void)backgroundSaveCSV: (NSURL*)url {
@@ -45,11 +95,8 @@
   if (data == NULL) {
     [self performSelectorOnMainThread: @selector(runErrorAlertWithMessage:) withObject: @"Couldn't open the Onyx" waitUntilDone: YES];
   } else {
-    // this is an extra copy that is unnecessary
-    NSString * str = [NSString stringWithFormat:@"%s", data];
-    free(data);
-    
-    [str writeToURL: url atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+    NSData *d = [NSData dataWithBytesNoCopy: data length: strlen(data) freeWhenDone: YES];
+    [d writeToURL: url atomically: YES];
   }
   
   [self performSelectorOnMainThread: @selector(stopSpinnerEnableControls) withObject: nil waitUntilDone: NO];
@@ -68,7 +115,8 @@
             NSLog(@"Got URL: %@", [savePanel URL]);
           
           [self performSelectorInBackground: @selector(backgroundSaveCSV:) withObject: [savePanel URL]];
-        }
+        } else
+          self.statusText.stringValue = @"";
     }];
 
 }
@@ -93,11 +141,11 @@
   if(result == nil) {
     NSRunAlertPanel(@"OnyxLoader: Programming complete",
                     @"Please disconnect the device.",
-                    @"OK", NULL, NULL);
+                    @"OK", nil, nil);
   } else {
     NSRunAlertPanel(@"OnyxLoader: Programming failed",
                     result,
-                    @"OK", NULL, NULL);
+                    @"OK", nil, nil);
   }
 }
 
@@ -171,7 +219,7 @@
     
     NSInteger res = NSRunAlertPanel(@"Programming Beta Firmware",
     @"Warning: This firmware is for testing only, it is unsupported by Medcom International",
-    @"Continue", @"Cancel", NULL);
+    @"Continue", @"Cancel", nil);
     
     switch(res) {
       case NSAlertDefaultReturn:

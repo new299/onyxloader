@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7B616C78172DCD8C0040B184 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 7B616C76172DCB140040B184 /* icon.icns */; };
+		7B616C79172DCDD10040B184 /* libftd2xx.1.2.2.dylib in Resources */ = {isa = PBXBuildFile; fileRef = D5EED3F716F677790054D740 /* libftd2xx.1.2.2.dylib */; };
+		7BB0244F172CE58C00AFDB28 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BB0244E172CE58C00AFDB28 /* IOKit.framework */; };
+		7BB02451172CEF7100AFDB28 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BB02450172CEF7100AFDB28 /* Security.framework */; };
 		D508606E1647971A009427DF /* cmdline in Resources */ = {isa = PBXBuildFile; fileRef = D50860631647971A009427DF /* cmdline */; };
 		D508606F1647971A009427DF /* lakefile in Resources */ = {isa = PBXBuildFile; fileRef = D50860641647971A009427DF /* lakefile */; };
 		D50860711647971A009427DF /* MIT-LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = D50860661647971A009427DF /* MIT-LICENSE */; };
@@ -37,6 +41,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7B616C76172DCB140040B184 /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = SOURCE_ROOT; };
+		7BB0244E172CE58C00AFDB28 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = ../../../../../../../System/Library/Frameworks/IOKit.framework; sourceTree = "<group>"; };
+		7BB02450172CEF7100AFDB28 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = ../../../../../../../System/Library/Frameworks/Security.framework; sourceTree = "<group>"; };
 		D508606116479264009427DF /* doflash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = doflash.h; sourceTree = SOURCE_ROOT; };
 		D50860631647971A009427DF /* cmdline */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cmdline; sourceTree = "<group>"; };
 		D50860641647971A009427DF /* lakefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = lakefile; sourceTree = "<group>"; };
@@ -79,6 +86,8 @@
 			files = (
 				D5EED3F816F677790054D740 /* libftd2xx.1.2.2.dylib in Frameworks */,
 				D558BAE0164754D100247553 /* Cocoa.framework in Frameworks */,
+				7BB0244F172CE58C00AFDB28 /* IOKit.framework in Frameworks */,
+				7BB02451172CEF7100AFDB28 /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -142,6 +151,8 @@
 		D558BAE1164754D100247553 /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7BB02450172CEF7100AFDB28 /* Security.framework */,
+				7BB0244E172CE58C00AFDB28 /* IOKit.framework */,
 				D558BAE2164754D100247553 /* AppKit.framework */,
 				D558BAE3164754D100247553 /* CoreData.framework */,
 				D558BAE4164754D100247553 /* Foundation.framework */,
@@ -171,6 +182,7 @@
 			children = (
 				D558BAE7164754D100247553 /* OnyxLoader-Info.plist */,
 				D558BAE8164754D100247553 /* InfoPlist.strings */,
+				7B616C76172DCB140040B184 /* icon.icns */,
 				D558BAEB164754D100247553 /* main.m */,
 				D558BAED164754D100247553 /* OnyxLoader-Prefix.pch */,
 				D558BAEE164754D100247553 /* Credits.rtf */,
@@ -207,6 +219,7 @@
 				D558BAD7164754D000247553 /* Sources */,
 				D558BAD8164754D000247553 /* Frameworks */,
 				D558BAD9164754D000247553 /* Resources */,
+				7B616C7A172DCF5E0040B184 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -268,12 +281,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B616C79172DCDD10040B184 /* libftd2xx.1.2.2.dylib in Resources */,
 				D558BAEA164754D100247553 /* InfoPlist.strings in Resources */,
 				D558BAF0164754D100247553 /* Credits.rtf in Resources */,
 				D558BAF6164754D100247553 /* MainMenu.xib in Resources */,
 				D508606E1647971A009427DF /* cmdline in Resources */,
 				D508606F1647971A009427DF /* lakefile in Resources */,
 				D50860711647971A009427DF /* MIT-LICENSE in Resources */,
+				7B616C78172DCD8C0040B184 /* icon.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -288,6 +303,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		7B616C7A172DCF5E0040B184 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/bin/stat ${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libftd2xx.1.2.2.dylib\n/usr/bin/install_name_tool -change /usr/local/lib/libftd2xx.1.2.2.dylib ${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libftd2xx.1.2.2.dylib ${TARGET_BUILD_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}\nenv\n";
+		};
 		D558BAFA164754D100247553 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
