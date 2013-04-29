@@ -50,8 +50,8 @@
     myStatus = AuthorizationFree (myAuthorizationRef,
                                   kAuthorizationFlagDestroyRights);
 #else
-    NSRunAlertPanel(@"FTDI Virtual Serial Driver is loaded",
-                    @"The FTDI virtual serial port kext seems to be loaded so things will likely fail.  You can temporarily fix this by doing 'sudo kextunload -b com.FTDI.driver.FTDIUSBSerialDriver' and then 'sudo kextutil -b com.FTDI.driver.FTDIUSBSerialDriver' to when you want to use the virtual serial driver again.", @"OK", nil, nil);
+    NSRunAlertPanel(@"Help: FTDI Virtual Serial Driver is loaded",
+                    @"The FTDI virtual serial port kext seems to be loaded so things will likely fail.  You can temporarily fix this by doing 'sudo kextunload -b com.FTDI.driver.FTDIUSBSerialDriver' and then 'sudo kextutil -b com.FTDI.driver.FTDIUSBSerialDriver' when you want to use the virtual serial driver again.", @"OK", nil, nil);
 #endif
     
     
