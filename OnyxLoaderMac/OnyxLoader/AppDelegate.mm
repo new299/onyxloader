@@ -93,7 +93,7 @@
   char *data = do_get_log_csv();
   
   if (data == NULL) {
-    [self performSelectorOnMainThread: @selector(runErrorAlertWithMessage:) withObject: @"Couldn't open the Onyx" waitUntilDone: YES];
+    [self performSelectorOnMainThread: @selector(runErrorAlertWithMessage:) withObject: @"Couldn't talk to the Onyx" waitUntilDone: YES];
   } else {
     NSData *d = [NSData dataWithBytesNoCopy: data length: strlen(data) freeWhenDone: YES];
     [d writeToURL: url atomically: YES];
@@ -125,7 +125,7 @@
   [self performSelectorOnMainThread: @selector(startSpinnerDisableControls) withObject: nil waitUntilDone: YES];
   
   if (do_set_time() == 0) {
-    [self performSelectorOnMainThread: @selector(runErrorAlertWithMessage:) withObject: @"Couldn't open the Onyx" waitUntilDone: YES];
+    [self performSelectorOnMainThread: @selector(runErrorAlertWithMessage:) withObject: @"Couldn't talk to the Onyx" waitUntilDone: YES];
   }
   
   [self performSelectorOnMainThread: @selector(stopSpinnerEnableControls) withObject: nil waitUntilDone: NO];  
