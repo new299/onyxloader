@@ -9,59 +9,29 @@
 #import "AppDelegate.h"
 #include "../doflash.h"
 
-#import <IOKit/kext/KextManager.h>
 
 @implementation AppDelegate
 
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-  NSString *ftdiKextKey = @"com.FTDI.driver.FTDIUSBSerialDriver";
-    // Insert code here to initialize your application
-  NSDictionary *kexts = (__bridge NSDictionary *)KextManagerCopyLoadedKextInfo((__bridge CFArrayRef)[NSArray arrayWithObject: ftdiKextKey], NULL);
-  if ([kexts objectForKey: ftdiKextKey] != nil) {
-    // unload the kext
-    
-#if 0
-    AuthorizationRef myAuthorizationRef;
-    OSStatus myStatus;
-    myStatus = AuthorizationCreate(NULL, kAuthorizationEmptyEnvironment,
-                                   kAuthorizationFlagDefaults, &myAuthorizationRef);
-    AuthorizationItem myItems[1];
-    
-    myItems[0].name = "com.myOrganization.myProduct.myRight1";
-    myItems[0].valueLength = 0;
-    myItems[0].value = NULL;
-    myItems[0].flags = 0;
-    
-    AuthorizationRights myRights;
-    myRights.count = sizeof (myItems) / sizeof (myItems[0]);
-    myRights.items = myItems;
-    
-    AuthorizationFlags myFlags;
-    myFlags = kAuthorizationFlagDefaults |
-    kAuthorizationFlagInteractionAllowed |
-    kAuthorizationFlagExtendRights;
-    
-    myStatus = AuthorizationCopyRights (myAuthorizationRef, &myRights,
-                                        kAuthorizationEmptyEnvironment, myFlags, NULL);
-    // do stuff
-    // need to do SMJobBless
-    
-    myStatus = AuthorizationFree (myAuthorizationRef,
-                                  kAuthorizationFlagDestroyRights);
-#else
+  
+  // Insert code here to initialize your application  
+  self.kextLoader = [[FTDIKextLoader alloc] init];
+  
+  [self.kextLoader installHelperIfNeeded];
+  if ([self.kextLoader isFtdiKextLoaded])
+    [self.kextLoader sendKextUnloadToHelper];
+  if ([self.kextLoader isFtdiKextLoaded])
     NSRunAlertPanel(@"Help: FTDI Virtual Serial Driver is loaded",
-                    @"The FTDI virtual serial port kext seems to be loaded so things will likely fail.  You can temporarily fix this by doing 'sudo kextunload -b com.FTDI.driver.FTDIUSBSerialDriver' and then 'sudo kextutil -b com.FTDI.driver.FTDIUSBSerialDriver' when you want to use the virtual serial driver again.", @"OK", nil, nil);
-#endif
-    
-    
-  }
+                    @"The FTDI virtual serial port kext seems to be loaded and I can't unload it, so things will likely fail.  You can temporarily fix this by doing 'sudo kextunload -b com.FTDI.driver.FTDIUSBSerialDriver' and then 'sudo kextutil -b com.FTDI.driver.FTDIUSBSerialDriver' when you want to use the virtual serial driver again.", @"OK", nil, nil);    
+  [self.kextLoader sendKextLoadToHelper];
 }
 
 
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
-  
+  [self.kextLoader sendKextLoadToHelper];
 }
 
 
@@ -90,7 +60,9 @@
 - (void)backgroundSaveCSV: (NSURL*)url {
   [self performSelectorOnMainThread: @selector(startSpinnerDisableControls) withObject: nil waitUntilDone: YES];
   
+  [self.kextLoader sendKextUnloadToHelper];
   char *data = do_get_log_csv();
+  [self.kextLoader sendKextLoadToHelper];
   
   if (data == NULL) {
     [self performSelectorOnMainThread: @selector(runErrorAlertWithMessage:) withObject: @"Couldn't talk to the Onyx" waitUntilDone: YES];
@@ -124,9 +96,11 @@
 - (void)backgroundSetTime {
   [self performSelectorOnMainThread: @selector(startSpinnerDisableControls) withObject: nil waitUntilDone: YES];
   
+  [self.kextLoader sendKextUnloadToHelper];
   if (do_set_time() == 0) {
     [self performSelectorOnMainThread: @selector(runErrorAlertWithMessage:) withObject: @"Couldn't talk to the Onyx" waitUntilDone: YES];
   }
+  [self.kextLoader sendKextLoadToHelper];
   
   [self performSelectorOnMainThread: @selector(stopSpinnerEnableControls) withObject: nil waitUntilDone: NO];  
 }
@@ -181,7 +155,9 @@
   argv[1] = argv1;
   argv[2] = argv2;
   
+  [self.kextLoader sendKextUnloadToHelper];
   return do_flash_main(argc,argv);
+  [self.kextLoader sendKextLoadToHelper];
 }
 
 
@@ -201,8 +177,13 @@
     
   if (filePath != nil) {
     int result = [self writeFileToFlash: filePath];
-    if (result != 0)
-      resultString = [NSString stringWithFormat: @"Failure Code: %d", result];
+    if (result != 0) {
+      const char *mappedErrorString = map_flash_error_to_string(result);
+      if (mappedErrorString != NULL)
+        resultString = [NSString stringWithFormat: @"Failed (%d): %s", result, mappedErrorString];
+      else
+        resultString = [NSString stringWithFormat: @"Failure Code: %d", result];
+    }
   } else {
     resultString = @"Failed to download firmware";
   }
@@ -250,8 +231,13 @@
 
   if (filePath != nil) {
     int result = [self writeFileToFlash: filePath];
-    if (result != 0)
-      resultString = [NSString stringWithFormat: @"Failure Code: %d", result];
+    if (result != 0) {
+      const char *mappedErrorString = map_flash_error_to_string(result);
+      if (mappedErrorString != NULL)
+        resultString = [NSString stringWithFormat: @"Failed (%d): %s", result, mappedErrorString];
+      else
+        resultString = [NSString stringWithFormat: @"Failure Code: %d", result];
+    }
   } else {
     resultString = @"Failed to download firmware";
   }
@@ -317,6 +303,7 @@
   self.updateLatestButton = nil;
   self.updateBetaButton = nil;
   self.statusText = nil;
+  self.kextLoader = nil;
 }
 
 @end

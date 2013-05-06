@@ -790,3 +790,32 @@ int do_flash_main(int argc, char **argv) {
   return 0;
 }
 
+const char *map_flash_error_to_string(int error) {
+  switch (error) {
+    case 0:
+      return "No Error";
+    case 10:
+      return "Unable to open file for programming";
+    case 11:
+      return "Unsupported bootloader version";
+    case 13:
+      return "Unsupported chip ID";
+    case 14:
+      return "Unable to get bootloader version or Chip ID (communication failure)";
+    case 15:
+      return "Unable to execute write unprotect";
+    case 16:
+      return "Unable to execute read unprotect or erase chip pre prvkey";
+    case 17:
+      return "Unable to erase chip - post pk";
+    case 18:
+      return "Unable to program - initial page";
+    case 19:
+      return "Unable to program - post pk flash";
+    case 20:
+      return "Unable to read FLASH memory";
+    default:
+      return NULL;
+  }
+}
+

@@ -39,12 +39,17 @@
 	<key>LSMinimumSystemVersion</key>
 	<string>10.7</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2012 SGenomics Ltd. All rights reserved.</string>
+	<string>Copyright © 2012-2013 SGenomics Ltd. All rights reserved.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-        <key>CFBundleIconFile</key>
-        <string>icon.icns</string>
+	<key>CFBundleIconFile</key>
+	<string>icon.icns</string>
+	<key>SMPrivilegedExecutables</key>
+	<dict>
+		<key>uk.co.sgenomics.OnyxLoaderHelper</key>
+		<string>identifier uk.co.sgenomics.OnyxLoaderHelper and certificate leaf[subject.CN] = &quot;OnyxLoader&quot;</string>
+	</dict>
 </dict>
 </plist>

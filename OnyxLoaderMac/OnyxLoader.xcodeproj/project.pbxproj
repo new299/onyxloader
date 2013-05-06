@@ -7,10 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7B1E59441735EEBB004E38EE /* uk_co_sgenomics_OnyxLoaderHelper.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7B1E59431735EEBB004E38EE /* uk_co_sgenomics_OnyxLoaderHelper.1 */; };
+		7B1E594B1735FA96004E38EE /* uk.co.sgenomics.OnyxLoaderHelper in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7B1E593F1735EEBB004E38EE /* uk.co.sgenomics.OnyxLoaderHelper */; };
+		7B1E59501735FEC3004E38EE /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B1E594E1735FEAC004E38EE /* ServiceManagement.framework */; };
 		7B616C78172DCD8C0040B184 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 7B616C76172DCB140040B184 /* icon.icns */; };
 		7B616C79172DCDD10040B184 /* libftd2xx.1.2.2.dylib in Resources */ = {isa = PBXBuildFile; fileRef = D5EED3F716F677790054D740 /* libftd2xx.1.2.2.dylib */; };
 		7BB0244F172CE58C00AFDB28 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BB0244E172CE58C00AFDB28 /* IOKit.framework */; };
 		7BB02451172CEF7100AFDB28 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BB02450172CEF7100AFDB28 /* Security.framework */; };
+		7BCEEBD4173715C8000A3DB0 /* FTDIKextLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BCEEBD3173715C8000A3DB0 /* FTDIKextLoader.m */; };
+		7BCEEBD51737222A000A3DB0 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BB0244E172CE58C00AFDB28 /* IOKit.framework */; };
+		7BCEEBD617372290000A3DB0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D558BAE4164754D100247553 /* Foundation.framework */; };
+		7BCEEBD717372B33000A3DB0 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 7B1E59411735EEBB004E38EE /* main.c */; };
 		D508606E1647971A009427DF /* cmdline in Resources */ = {isa = PBXBuildFile; fileRef = D50860631647971A009427DF /* cmdline */; };
 		D508606F1647971A009427DF /* lakefile in Resources */ = {isa = PBXBuildFile; fileRef = D50860641647971A009427DF /* lakefile */; };
 		D50860711647971A009427DF /* MIT-LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = D50860661647971A009427DF /* MIT-LICENSE */; };
@@ -31,6 +38,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		7B1E594C1735FAA9004E38EE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D558BAD2164754D000247553 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7B1E593E1735EEBB004E38EE;
+			remoteInfo = uk.co.sgenomics.OnyxLoaderHelper;
+		};
 		D558BB00164754D100247553 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D558BAD2164754D000247553 /* Project object */;
@@ -40,10 +54,41 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		7B1E593D1735EEBB004E38EE /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				7B1E59441735EEBB004E38EE /* uk_co_sgenomics_OnyxLoaderHelper.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		7B1E594A1735FA60004E38EE /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/LaunchServices;
+			dstSubfolderSpec = 1;
+			files = (
+				7B1E594B1735FA96004E38EE /* uk.co.sgenomics.OnyxLoaderHelper in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		7B1E593F1735EEBB004E38EE /* uk.co.sgenomics.OnyxLoaderHelper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = uk.co.sgenomics.OnyxLoaderHelper; sourceTree = BUILT_PRODUCTS_DIR; };
+		7B1E59411735EEBB004E38EE /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		7B1E59431735EEBB004E38EE /* uk_co_sgenomics_OnyxLoaderHelper.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = uk_co_sgenomics_OnyxLoaderHelper.1; sourceTree = "<group>"; };
+		7B1E59481735EF5A004E38EE /* OnyxLoaderHelper-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "OnyxLoaderHelper-Info.plist"; sourceTree = "<group>"; };
+		7B1E59491735EF8A004E38EE /* OnyxLoaderHelper-Launchd.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "OnyxLoaderHelper-Launchd.plist"; sourceTree = "<group>"; };
+		7B1E594E1735FEAC004E38EE /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = ../../../../../../../System/Library/Frameworks/ServiceManagement.framework; sourceTree = "<group>"; };
 		7B616C76172DCB140040B184 /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = SOURCE_ROOT; };
 		7BB0244E172CE58C00AFDB28 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = ../../../../../../../System/Library/Frameworks/IOKit.framework; sourceTree = "<group>"; };
 		7BB02450172CEF7100AFDB28 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = ../../../../../../../System/Library/Frameworks/Security.framework; sourceTree = "<group>"; };
+		7BCEEBD2173715C8000A3DB0 /* FTDIKextLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTDIKextLoader.h; sourceTree = "<group>"; };
+		7BCEEBD3173715C8000A3DB0 /* FTDIKextLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTDIKextLoader.m; sourceTree = "<group>"; };
 		D508606116479264009427DF /* doflash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = doflash.h; sourceTree = SOURCE_ROOT; };
 		D50860631647971A009427DF /* cmdline */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cmdline; sourceTree = "<group>"; };
 		D50860641647971A009427DF /* lakefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = lakefile; sourceTree = "<group>"; };
@@ -80,6 +125,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		7B1E593C1735EEBB004E38EE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7BCEEBD51737222A000A3DB0 /* IOKit.framework in Frameworks */,
+				7BCEEBD617372290000A3DB0 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D558BAD8164754D000247553 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -88,6 +142,7 @@
 				D558BAE0164754D100247553 /* Cocoa.framework in Frameworks */,
 				7BB0244F172CE58C00AFDB28 /* IOKit.framework in Frameworks */,
 				7BB02451172CEF7100AFDB28 /* Security.framework in Frameworks */,
+				7B1E59501735FEC3004E38EE /* ServiceManagement.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,6 +158,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7B1E59401735EEBB004E38EE /* uk.co.sgenomics.OnyxLoaderHelper */ = {
+			isa = PBXGroup;
+			children = (
+				7B1E59411735EEBB004E38EE /* main.c */,
+				7B1E59481735EF5A004E38EE /* OnyxLoaderHelper-Info.plist */,
+				7B1E59491735EF8A004E38EE /* OnyxLoaderHelper-Launchd.plist */,
+				7B1E59431735EEBB004E38EE /* uk_co_sgenomics_OnyxLoaderHelper.1 */,
+			);
+			path = uk.co.sgenomics.OnyxLoaderHelper;
+			sourceTree = "<group>";
+		};
 		D50860621647971A009427DF /* stm32ld */ = {
 			isa = PBXGroup;
 			children = (
@@ -124,6 +190,7 @@
 				D5EED3F716F677790054D740 /* libftd2xx.1.2.2.dylib */,
 				D558BAE5164754D100247553 /* OnyxLoader */,
 				D558BB02164754D100247553 /* OnyxLoaderTests */,
+				7B1E59401735EEBB004E38EE /* uk.co.sgenomics.OnyxLoaderHelper */,
 				D558BADE164754D100247553 /* Frameworks */,
 				D558BADC164754D000247553 /* Products */,
 			);
@@ -134,6 +201,7 @@
 			children = (
 				D558BADB164754D000247553 /* OnyxLoader.app */,
 				D558BAFC164754D100247553 /* OnyxLoaderTests.octest */,
+				7B1E593F1735EEBB004E38EE /* uk.co.sgenomics.OnyxLoaderHelper */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -151,6 +219,7 @@
 		D558BAE1164754D100247553 /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7B1E594E1735FEAC004E38EE /* ServiceManagement.framework */,
 				7BB02450172CEF7100AFDB28 /* Security.framework */,
 				7BB0244E172CE58C00AFDB28 /* IOKit.framework */,
 				D558BAE2164754D100247553 /* AppKit.framework */,
@@ -171,6 +240,8 @@
 				D508606116479264009427DF /* doflash.h */,
 				D558BAF1164754D100247553 /* AppDelegate.h */,
 				D558BAF2164754D100247553 /* AppDelegate.mm */,
+				7BCEEBD2173715C8000A3DB0 /* FTDIKextLoader.h */,
+				7BCEEBD3173715C8000A3DB0 /* FTDIKextLoader.m */,
 				D558BAF4164754D100247553 /* MainMenu.xib */,
 				D558BAE6164754D100247553 /* Supporting Files */,
 			);
@@ -212,6 +283,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		7B1E593E1735EEBB004E38EE /* uk.co.sgenomics.OnyxLoaderHelper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7B1E59471735EEBB004E38EE /* Build configuration list for PBXNativeTarget "uk.co.sgenomics.OnyxLoaderHelper" */;
+			buildPhases = (
+				7B1E593B1735EEBB004E38EE /* Sources */,
+				7B1E593C1735EEBB004E38EE /* Frameworks */,
+				7B1E593D1735EEBB004E38EE /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = uk.co.sgenomics.OnyxLoaderHelper;
+			productName = uk.co.sgenomics.OnyxLoaderHelper;
+			productReference = 7B1E593F1735EEBB004E38EE /* uk.co.sgenomics.OnyxLoaderHelper */;
+			productType = "com.apple.product-type.tool";
+		};
 		D558BADA164754D000247553 /* OnyxLoader */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D558BB0D164754D100247553 /* Build configuration list for PBXNativeTarget "OnyxLoader" */;
@@ -220,10 +308,12 @@
 				D558BAD8164754D000247553 /* Frameworks */,
 				D558BAD9164754D000247553 /* Resources */,
 				7B616C7A172DCF5E0040B184 /* ShellScript */,
+				7B1E594A1735FA60004E38EE /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				7B1E594D1735FAA9004E38EE /* PBXTargetDependency */,
 			);
 			name = OnyxLoader;
 			productName = OnyxLoader;
@@ -272,6 +362,7 @@
 			targets = (
 				D558BADA164754D000247553 /* OnyxLoader */,
 				D558BAFB164754D100247553 /* OnyxLoaderTests */,
+				7B1E593E1735EEBB004E38EE /* uk.co.sgenomics.OnyxLoaderHelper */,
 			);
 		};
 /* End PBXProject section */
@@ -332,6 +423,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		7B1E593B1735EEBB004E38EE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7BCEEBD717372B33000A3DB0 /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D558BAD7164754D000247553 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -341,6 +440,7 @@
 				D50860751647971A009427DF /* stm32ld.cpp in Sources */,
 				D58D1A76164828280090BFE6 /* serial_ftdi.cpp in Sources */,
 				D5EED3FC16F690370054D740 /* jsmn.cpp in Sources */,
+				7BCEEBD4173715C8000A3DB0 /* FTDIKextLoader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -355,6 +455,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		7B1E594D1735FAA9004E38EE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7B1E593E1735EEBB004E38EE /* uk.co.sgenomics.OnyxLoaderHelper */;
+			targetProxy = 7B1E594C1735FAA9004E38EE /* PBXContainerItemProxy */;
+		};
 		D558BB01164754D100247553 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D558BADA164754D000247553 /* OnyxLoader */;
@@ -398,6 +503,54 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		7B1E59451735EEBB004E38EE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CODE_SIGN_IDENTITY = OnyxLoader;
+				INFOPLIST_FILE = "uk.co.sgenomics.OnyxLoaderHelper/OnyxLoaderHelper-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				OTHER_LDFLAGS = (
+					"-sectcreate",
+					__TEXT,
+					__info_plist,
+					"uk.co.sgenomics.OnyxLoaderHelper/OnyxLoaderHelper-Info.plist",
+					"-sectcreate",
+					__TEXT,
+					__launchd_plist,
+					"uk.co.sgenomics.OnyxLoaderHelper/OnyxLoaderHelper-Launchd.plist",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+			};
+			name = Debug;
+		};
+		7B1E59461735EEBB004E38EE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CODE_SIGN_IDENTITY = OnyxLoader;
+				INFOPLIST_FILE = "uk.co.sgenomics.OnyxLoaderHelper/OnyxLoaderHelper-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				OTHER_LDFLAGS = (
+					"-sectcreate",
+					__TEXT,
+					__info_plist,
+					"uk.co.sgenomics.OnyxLoaderHelper/OnyxLoaderHelper-Info.plist",
+					"-sectcreate",
+					__TEXT,
+					__launchd_plist,
+					"uk.co.sgenomics.OnyxLoaderHelper/OnyxLoaderHelper-Launchd.plist",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+			};
+			name = Release;
+		};
 		D558BB0B164754D100247553 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -454,6 +607,7 @@
 		D558BB0E164754D100247553 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = OnyxLoader;
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "OnyxLoader/OnyxLoader-Prefix.pch";
@@ -462,7 +616,9 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
+				OTHER_LDFLAGS = "-headerpad_max_install_names";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -470,6 +626,7 @@
 		D558BB0F164754D100247553 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = OnyxLoader;
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "OnyxLoader/OnyxLoader-Prefix.pch";
@@ -479,7 +636,9 @@
 					"\"$(SRCROOT)\"",
 				);
 				"LIBRARY_SEARCH_PATHS[arch=*]" = "$(inherited)";
+				OTHER_LDFLAGS = "-headerpad_max_install_names";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -517,6 +676,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		7B1E59471735EEBB004E38EE /* Build configuration list for PBXNativeTarget "uk.co.sgenomics.OnyxLoaderHelper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7B1E59451735EEBB004E38EE /* Debug */,
+				7B1E59461735EEBB004E38EE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		D558BAD5164754D000247553 /* Build configuration list for PBXProject "OnyxLoader" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
