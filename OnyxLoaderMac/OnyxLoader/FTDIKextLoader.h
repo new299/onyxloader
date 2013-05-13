@@ -19,5 +19,6 @@
 - (BOOL) isFtdiKextLoaded;
 - (BOOL) sendKextLoadToHelper;
 - (BOOL) sendKextUnloadToHelper;
+- (BOOL) sendShutdownToHelper;
 
 @end

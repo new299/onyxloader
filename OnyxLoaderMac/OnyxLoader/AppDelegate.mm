@@ -15,23 +15,46 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-  
-  // Insert code here to initialize your application  
+  // this object manages the FTDI kext
   self.kextLoader = [[FTDIKextLoader alloc] init];
   
-  [self.kextLoader installHelperIfNeeded];
+  // attempt to install the helper app
+  BOOL installResult = [self.kextLoader installHelperIfNeeded];
+  
+  // try to unload the kext
   if ([self.kextLoader isFtdiKextLoaded])
     [self.kextLoader sendKextUnloadToHelper];
-  if ([self.kextLoader isFtdiKextLoaded])
-    NSRunAlertPanel(@"Help: FTDI Virtual Serial Driver is loaded",
-                    @"The FTDI virtual serial port kext seems to be loaded and I can't unload it, so things will likely fail.  You can temporarily fix this by doing 'sudo kextunload -b com.FTDI.driver.FTDIUSBSerialDriver' and then 'sudo kextutil -b com.FTDI.driver.FTDIUSBSerialDriver' when you want to use the virtual serial driver again.", @"OK", nil, nil);    
+  
+  // if something went wrong, ask what we should do
+  if ([self.kextLoader isFtdiKextLoaded] || !installResult) {
+    NSInteger result = NSRunAlertPanel(@"Help: FTDI Virtual Serial Driver is still loaded",
+                                       @"The helper was supposed to unload this, but something went wrong.  Sometimes this is because of a failure to upgrade the helper app.  If all else fails you can temporarily fix this by doing 'sudo kextunload -b com.FTDI.driver.FTDIUSBSerialDriver' and then 'sudo kextutil -b com.FTDI.driver.FTDIUSBSerialDriver' when you want to use the virtual serial driver again.  If you do nothing, things will likely fail, but if you retry, there's a very good chance it will work.",
+                                       @"Retry Helper Install",
+                                       @"Do Nothing and Continue", nil);
+    switch (result) {
+      case NSAlertDefaultReturn:
+        {
+          NSString *executablePath = [[NSBundle mainBundle] executablePath];
+          [NSTask launchedTaskWithLaunchPath: executablePath arguments: [NSArray array]];
+          [[NSApplication sharedApplication] terminate: self];
+          break;
+        }
+        
+      case NSAlertAlternateReturn:
+        // do nothing
+        break;
+    }
+  }
+  // leave things in the loaded state, if possible
   [self.kextLoader sendKextLoadToHelper];
 }
 
 
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
+  // when we are terminating, attempt to reload the kext, and kill the helper
   [self.kextLoader sendKextLoadToHelper];
+  [self.kextLoader sendShutdownToHelper];
 }
 
 
@@ -60,6 +83,7 @@
 - (void)backgroundSaveCSV: (NSURL*)url {
   [self performSelectorOnMainThread: @selector(startSpinnerDisableControls) withObject: nil waitUntilDone: YES];
   
+  // ignoring helper errors, because what could we really do anyway
   [self.kextLoader sendKextUnloadToHelper];
   char *data = do_get_log_csv();
   [self.kextLoader sendKextLoadToHelper];
@@ -96,11 +120,13 @@
 - (void)backgroundSetTime {
   [self performSelectorOnMainThread: @selector(startSpinnerDisableControls) withObject: nil waitUntilDone: YES];
   
+  // ignoring helper errors, because what could we really do anyway
   [self.kextLoader sendKextUnloadToHelper];
   if (do_set_time() == 0) {
+    [self.kextLoader sendKextLoadToHelper];
     [self performSelectorOnMainThread: @selector(runErrorAlertWithMessage:) withObject: @"Couldn't talk to the Onyx" waitUntilDone: YES];
-  }
-  [self.kextLoader sendKextLoadToHelper];
+  } else
+    [self.kextLoader sendKextLoadToHelper];
   
   [self performSelectorOnMainThread: @selector(stopSpinnerEnableControls) withObject: nil waitUntilDone: NO];  
 }
@@ -155,6 +181,7 @@
   argv[1] = argv1;
   argv[2] = argv2;
   
+  // ignoring helper errors, because what could we really do anyway
   [self.kextLoader sendKextUnloadToHelper];
   return do_flash_main(argc,argv);
   [self.kextLoader sendKextLoadToHelper];

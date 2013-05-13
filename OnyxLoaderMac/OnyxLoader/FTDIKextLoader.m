@@ -70,9 +70,6 @@
     SMJobRemove(kSMDomainSystemLaunchd, (__bridge CFStringRef)self.helperLabel, authRef, YES, &error);
     if (error != NULL)
       NSLog(@"SMJobRemove failed with %@", [CFBridgingRelease(error) description]);
-    CFRunLoopRunInMode(kCFRunLoopDefaultMode, 5.0, YES);
-    //[self destroyAuthRef: authRef];
-    //authRef = [self authenticateForInstallingHelper];
   }
   
   if (SMJobBless(kSMDomainSystemLaunchd, (__bridge CFStringRef)self.helperLabel, authRef, &error)) {
@@ -165,7 +162,6 @@
   dispatch_retain(semaphore);
   xpc_connection_send_message_with_reply(helper_connection, message, dispatch_get_main_queue(), ^(xpc_object_t event) {
     const char* response = xpc_dictionary_get_string(event, "reply");
-    printf("helper responded with: %s\n", response);
     *ecode = (int)xpc_dictionary_get_int64(event, "errorCode");
     if (response != NULL)
       replyString = [NSString stringWithUTF8String: response];
@@ -204,16 +200,30 @@
   if (![self setUpXPCOnDemand])
     return NO;
   int code;
-  [self sendMessageToHelper: @"unloadkext" errorCode: &code];
-  return YES;
+  NSString *msg = [self sendMessageToHelper: @"unloadkext" errorCode: &code];
+  if (msg != nil && ![msg isEqualToString: @"OK"])
+    NSLog(@"Helper got error reply %@", msg);
+  return code == 0;
 }
 
 - (BOOL) sendKextLoadToHelper {
   if (![self setUpXPCOnDemand])
     return NO;
   int code;
-  [self sendMessageToHelper: @"loadkext" errorCode: &code];  
-  return YES;
+  NSString *msg = [self sendMessageToHelper: @"loadkext" errorCode: &code];  
+  if (msg != nil && ![msg isEqualToString: @"OK"])
+    NSLog(@"Helper got error reply %@", msg);
+  return code == 0;
+}
+
+- (BOOL) sendShutdownToHelper {
+  if (![self setUpXPCOnDemand])
+    return NO;
+  int code;
+  NSString *msg = [self sendMessageToHelper: @"shutdown" errorCode: &code];
+  if (msg != nil && ![msg isEqualToString: @"OK"])
+    NSLog(@"Helper got error reply %@", msg);
+  return code == 0;
 }
 
 @end

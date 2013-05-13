@@ -9,7 +9,7 @@
 	<key>CFBundleName</key>
 	<string>OnyxLoaderHelper</string>
 	<key>CFBundleVersion</key>
-	<string>0.6.6</string>
+	<string>0.3.0</string>
 	<key>SMAuthorizedClients</key>
 	<array>
 		<string>identifier uk.co.sgenomics.OnyxLoader and certificate leaf[subject.CN] = &quot;OnyxLoader&quot;</string>

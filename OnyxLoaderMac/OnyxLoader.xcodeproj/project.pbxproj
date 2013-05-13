@@ -287,6 +287,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7B1E59471735EEBB004E38EE /* Build configuration list for PBXNativeTarget "uk.co.sgenomics.OnyxLoaderHelper" */;
 			buildPhases = (
+				7BCF36E31740576700D0C980 /* ShellScript */,
 				7B1E593B1735EEBB004E38EE /* Sources */,
 				7B1E593C1735EEBB004E38EE /* Frameworks */,
 				7B1E593D1735EEBB004E38EE /* CopyFiles */,
@@ -407,6 +408,21 @@
 			shellPath = /bin/sh;
 			shellScript = "/usr/bin/install_name_tool -change /usr/local/lib/libftd2xx.1.2.2.dylib @executable_path/../../../${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libftd2xx.1.2.2.dylib ${TARGET_BUILD_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}\n";
 		};
+		7BCF36E31740576700D0C980 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/OnyxLoaderHelper-Info.plist",
+				"$(SRCROOT)/OnyxLoaderHelper-Launchd.plist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# do nothing - this is a hack to create a dependency";
+		};
 		D558BAFA164754D100247553 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -511,7 +527,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CODE_SIGN_IDENTITY = OnyxLoader;
 				INFOPLIST_FILE = "uk.co.sgenomics.OnyxLoaderHelper/OnyxLoaderHelper-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_LDFLAGS = (
 					"-sectcreate",
 					__TEXT,
@@ -535,7 +551,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CODE_SIGN_IDENTITY = OnyxLoader;
 				INFOPLIST_FILE = "uk.co.sgenomics.OnyxLoaderHelper/OnyxLoaderHelper-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_LDFLAGS = (
 					"-sectcreate",
 					__TEXT,

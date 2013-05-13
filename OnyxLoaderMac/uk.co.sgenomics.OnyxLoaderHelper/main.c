@@ -34,6 +34,7 @@ static void __XPC_Peer_Event_Handler(xpc_connection_t connection, xpc_object_t e
     const char *request = xpc_dictionary_get_string(event, "request");
     const char *replyString = "OK";
     int64_t errorCode = 0;
+    int shutdownRequest = 0;
    
     if (request != NULL) {
       if (strcmp(request, "loadkext") == 0) {
@@ -52,6 +53,9 @@ static void __XPC_Peer_Event_Handler(xpc_connection_t connection, xpc_object_t e
           replyString = "Load Error";
           errorCode = ret;
         }
+      } else if (strcmp(request, "shutdown") == 0) {
+        syslog(LOG_NOTICE, "got the shutdown request");
+        shutdownRequest = 1;
       } else
         syslog(LOG_NOTICE, "got an unknown request");
     }
@@ -61,6 +65,12 @@ static void __XPC_Peer_Event_Handler(xpc_connection_t connection, xpc_object_t e
     xpc_dictionary_set_int64(reply, "errorCode", errorCode);
     xpc_connection_send_message(remote, reply);
     xpc_release(reply);
+    if (shutdownRequest) {
+      // shut down after a short delay (5 seconds)
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        exit(EXIT_SUCCESS);
+      });
+    }
 	}
 }
 
