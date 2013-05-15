@@ -406,7 +406,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/bin/install_name_tool -change /usr/local/lib/libftd2xx.1.2.2.dylib @executable_path/../../../${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libftd2xx.1.2.2.dylib ${TARGET_BUILD_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}\n";
+			shellScript = "/usr/bin/install_name_tool -change /usr/local/lib/libftd2xx.1.2.2.dylib @executable_path/../../Contents/Resources/libftd2xx.1.2.2.dylib ${TARGET_BUILD_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}\n";
 		};
 		7BCF36E31740576700D0C980 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
